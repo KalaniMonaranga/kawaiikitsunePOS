@@ -1,7 +1,12 @@
 import { useLocation } from "react-router-dom";
-
+import { supabase } from "../services/supabase";
 function Header() {
   const location = useLocation();
+  
+  async function handleLogout() {
+  await supabase.auth.signOut();
+  window.location.reload();
+}
 
   const pageTitles = {
     "/": "Dashboard",
@@ -23,6 +28,12 @@ function Header() {
       </div>
 
       <div className="header-actions">
+        <button
+        className="logout-btn"
+        onClick={handleLogout}
+        >
+        Logout
+        </button>
         <input type="text" placeholder="Search..." />
         <button>+ New Sale</button>
       </div>
