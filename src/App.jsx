@@ -10,6 +10,7 @@ import Sales from "./pages/Sales";
 import Products from "./pages/Products";
 import Categories from "./pages/Categories";
 import Customers from "./pages/Customers";
+import Reports from "./pages/Reports";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -52,6 +53,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/reports" element={<Reports />} />
         </Routes>
       </Layout>
     </BrowserRouter>

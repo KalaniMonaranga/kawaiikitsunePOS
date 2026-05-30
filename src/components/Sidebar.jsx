@@ -8,6 +8,7 @@ function Sidebar() {
   { name: "Products", path: "/products" },
   { name: "Categories", path: "/categories" },
   { name: "Customers", path: "/customers" },
+  { name: "Reports", path: "/reports" }
 ];
 
   return (
