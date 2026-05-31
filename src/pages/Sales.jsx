@@ -218,59 +218,81 @@ function Sales() {
     fetchCustomers();
   }
 
-  function printReceipt(billNo, finalCustomerName) {
-    const receiptWindow = window.open("", "_blank");
+  function printReceiptFromCompletedSale() {
+  if (!completedSale) return;
 
-    receiptWindow.document.write(`
-      <html>
-        <head>
-          <title>Receipt</title>
-          <style>
-            body {
-              width: 190px;
-              font-family: Arial, sans-serif;
-              font-size: 11px;
-              margin: 0;
-              padding: 5px;
-              color: #000;
-            }
+  const receiptWindow = window.open("", "_blank");
 
-            .center {
-              text-align: center;
-            }
+  receiptWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          @page {
+            size: 58mm auto;
+            margin: 0;
+          }
 
-            .logo {
-              width: 90px;
-              height: 90px;
-            }
+          html,
+          body {
+            width: 58mm;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #000;
+          }
 
-            .line {
-              border-top: 1px dashed #000;
-              margin: 6px 0;
-            }
+          .receipt {
+            width: 58mm;
+            padding: 4mm;
+            box-sizing: border-box;
+          }
 
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              font-size: 10px;
-            }
+          .center {
+            text-align: center;
+          }
 
-            td {
-              padding: 2px 0;
-              vertical-align: top;
-            }
+          .logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 4px;
+          }
 
-            .right {
-              text-align: right;
-            }
+          .line {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+          }
 
-            .bold {
-              font-weight: bold;
-            }
-          </style>
-        </head>
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+          }
 
-        <body>
+          td {
+            padding: 2px 0;
+            vertical-align: top;
+          }
+
+          .right {
+            text-align: right;
+          }
+
+          .bold {
+            font-weight: bold;
+          }
+
+          .total-row {
+            font-size: 12px;
+            font-weight: bold;
+          }
+        </style>
+      </head>
+
+      <body>
+        <div class="receipt">
           <div class="center">
             <img src="${logo}" class="logo" />
             <div class="bold">KAWAII KITSUNE</div>
@@ -279,24 +301,27 @@ function Sales() {
 
           <div class="line"></div>
 
-          <div>Bill No: ${billNo}</div>
-          <div>Customer: ${finalCustomerName}</div>
-          <div>Date: ${new Date().toLocaleString()}</div>
+          <div>Bill No: ${completedSale.billNo}</div>
+          <div>Cashier: Kalani</div>
+          <div>Customer: ${completedSale.customerName}</div>
+          <div>Date: ${completedSale.date}</div>
 
           <div class="line"></div>
 
           <table>
-            ${cart
+            ${completedSale.cart
               .map(
                 (item) => `
-                <tr>
-                  <td colspan="2">${item.name}</td>
-                </tr>
-                <tr>
-                  <td>${item.cartQty} x Rs.${item.selling_price}</td>
-                  <td class="right">Rs.${Number(item.selling_price) * item.cartQty}</td>
-                </tr>
-              `
+                  <tr>
+                    <td colspan="2">${item.name}</td>
+                  </tr>
+                  <tr>
+                    <td>${item.cartQty} x Rs.${Number(item.selling_price).toFixed(2)}</td>
+                    <td class="right">Rs.${(
+                      Number(item.selling_price) * Number(item.cartQty)
+                    ).toFixed(2)}</td>
+                  </tr>
+                `
               )
               .join("")}
           </table>
@@ -304,17 +329,17 @@ function Sales() {
           <div class="line"></div>
 
           <table>
-            <tr>
-              <td class="bold">Total</td>
-              <td class="right bold">Rs.${total.toFixed(2)}</td>
+            <tr class="total-row">
+              <td>Total</td>
+              <td class="right">Rs.${Number(completedSale.total).toFixed(2)}</td>
             </tr>
             <tr>
               <td>Paid</td>
-              <td class="right">Rs.${paid.toFixed(2)}</td>
+              <td class="right">Rs.${Number(completedSale.paid).toFixed(2)}</td>
             </tr>
             <tr>
               <td>Change</td>
-              <td class="right">Rs.${change.toFixed(2)}</td>
+              <td class="right">Rs.${Number(completedSale.change).toFixed(2)}</td>
             </tr>
           </table>
 
@@ -324,18 +349,19 @@ function Sales() {
             Thank you!<br/>
             Come again 💜
           </div>
+        </div>
 
-          <script>
-            window.onload = function() {
-              window.print();
-            }
-          </script>
-        </body>
-      </html>
-    `);
+        <script>
+          window.onload = function() {
+            window.print();
+          }
+        </script>
+      </body>
+    </html>
+  `);
 
-    receiptWindow.document.close();
-  }
+  receiptWindow.document.close();
+}
   
   function downloadPDF() {
   if (!completedSale) return;
@@ -538,12 +564,10 @@ function Sales() {
       <p>Total: Rs. {completedSale.total.toFixed(2)}</p>
 
       <button
-        onClick={() =>
-          printReceipt(completedSale.billNo, completedSale.customerName)
-        }
-      >
-        🖨 Print Receipt
-      </button>
+        onClick={() => printReceiptFromCompletedSale()}
+            >
+                🖨 Print Receipt
+              </button>
 
       <button onClick={downloadPDF}>
         📄 Download PDF

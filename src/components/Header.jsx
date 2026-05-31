@@ -1,12 +1,14 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
+
 function Header() {
   const location = useLocation();
-  
+  const navigate = useNavigate();
+
   async function handleLogout() {
-  await supabase.auth.signOut();
-  window.location.reload();
-}
+    await supabase.auth.signOut();
+    window.location.reload();
+  }
 
   const pageTitles = {
     "/": "Dashboard",
@@ -29,13 +31,17 @@ function Header() {
 
       <div className="header-actions">
         <button
-        className="logout-btn"
-        onClick={handleLogout}
+          className="logout-btn"
+          onClick={handleLogout}
         >
-        Logout
+          Logout
         </button>
+
         <input type="text" placeholder="Search..." />
-        <button>+ New Sale</button>
+
+        <button onClick={() => navigate("/sales")}>
+          + New Sale
+        </button>
       </div>
     </header>
   );
