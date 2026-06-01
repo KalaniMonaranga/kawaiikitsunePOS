@@ -1144,3 +1144,41 @@ body {
     border: 1px solid #ddd;
   }
 }
+
+.low-stock-panel {
+  margin-top: 24px;
+}
+
+.low-stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.low-stock-item {
+  background: #fff1f1;
+  border: 1px solid #ffc9c9;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.low-stock-item strong {
+  color: #7a0012;
+}
+
+.low-stock-item p {
+  color: #8a5d64;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.low-stock-item span {
+  background: #b00020;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+}

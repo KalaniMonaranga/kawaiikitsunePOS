@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 
+
 function Dashboard() {
   const [todaySales, setTodaySales] = useState(0);
   const [productsCount, setProductsCount] = useState(0);
@@ -8,6 +9,7 @@ function Dashboard() {
   const [monthlySalesAmount, setMonthlySalesAmount] = useState(0);
   const [recentSales, setRecentSales] = useState([]);
   const [loyalCustomers, setLoyalCustomers] = useState([]);
+  const [lowStockProducts, setLowStockProducts] = useState([]);
 
   useEffect(() => {
     loadDashboardData();
@@ -33,9 +35,10 @@ function Dashboard() {
       .filter((sale) => sale.created_at?.startsWith(today))
       .reduce((sum, sale) => sum + Number(sale.total_amount || 0), 0);
 
-    const lowStockCount = (products || []).filter(
-      (product) => Number(product.quantity) <= 5
-    ).length;
+    const lowStockList = (products || [])
+      .filter((product) => Number(product.quantity) <= 5)
+      .sort((a, b) => Number(a.quantity) - Number(b.quantity))
+      .slice(0, 5);
 
     const monthlySales = (sales || []).filter(
       (sale) => new Date(sale.created_at) >= monthStart
@@ -56,6 +59,7 @@ function Dashboard() {
     setMonthlySalesAmount(monthlyTotal);
     setRecentSales(latestSales);
     setLoyalCustomers(customers || []);
+    setLowStockProducts(lowStockList);
   }
 
   const cards = [
@@ -110,6 +114,27 @@ function Dashboard() {
       <div className="dashboard-row">
         <div className="panel">
           <h3>Recent Sales</h3>
+
+            <div className="panel low-stock-panel">
+  <h3>Low Stock Products</h3>
+
+      {lowStockProducts.length === 0 ? (
+        <p>No low stock products.</p>
+      ) : (
+        <div className="low-stock-list">
+          {lowStockProducts.map((product) => (
+            <div className="low-stock-item" key={product.id}>
+              <div>
+                <strong>{product.name}</strong>
+                <p>Barcode: {product.barcode || "-"}</p>
+              </div>
+
+              <span>{product.quantity} left</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
           {recentSales.length === 0 ? (
             <p>No recent sales yet.</p>
