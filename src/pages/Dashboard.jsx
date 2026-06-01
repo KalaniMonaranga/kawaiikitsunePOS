@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 
-
 function Dashboard() {
   const [todaySales, setTodaySales] = useState(0);
   const [productsCount, setProductsCount] = useState(0);
@@ -55,7 +54,7 @@ function Dashboard() {
 
     setTodaySales(todayTotal);
     setProductsCount(products?.length || 0);
-    setLowStock(lowStockCount);
+    setLowStock(lowStockList.length);
     setMonthlySalesAmount(monthlyTotal);
     setRecentSales(latestSales);
     setLoyalCustomers(customers || []);
@@ -115,27 +114,6 @@ function Dashboard() {
         <div className="panel">
           <h3>Recent Sales</h3>
 
-            <div className="panel low-stock-panel">
-  <h3>Low Stock Products</h3>
-
-      {lowStockProducts.length === 0 ? (
-        <p>No low stock products.</p>
-      ) : (
-        <div className="low-stock-list">
-          {lowStockProducts.map((product) => (
-            <div className="low-stock-item" key={product.id}>
-              <div>
-                <strong>{product.name}</strong>
-                <p>Barcode: {product.barcode || "-"}</p>
-              </div>
-
-              <span>{product.quantity} left</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
           {recentSales.length === 0 ? (
             <p>No recent sales yet.</p>
           ) : (
@@ -183,6 +161,27 @@ function Dashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="panel low-stock-panel">
+        <h3>Low Stock Products</h3>
+
+        {lowStockProducts.length === 0 ? (
+          <p>No low stock products.</p>
+        ) : (
+          <div className="low-stock-list">
+            {lowStockProducts.map((product) => (
+              <div className="low-stock-item" key={product.id}>
+                <div>
+                  <strong>{product.name}</strong>
+                  <p>Barcode: {product.barcode || "-"}</p>
+                </div>
+
+                <span>{product.quantity} left</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
