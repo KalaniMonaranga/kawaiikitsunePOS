@@ -8,6 +8,7 @@ function Reports() {
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [chartView, setChartView] = useState("daily");
 
   useEffect(() => {
     loadReportsData();
@@ -61,6 +62,30 @@ function Reports() {
     () => sales.filter((sale) => isInFilter(sale.created_at)),
     [sales, filter]
   );
+
+  const chartData = useMemo(() => {
+    const buckets = {};
+    const labels = {};
+
+    filteredSales.forEach((sale) => {
+      const date = new Date(sale.created_at);
+      const amount = Number(sale.total_amount || 0);
+
+      if (chartView === "monthly") {
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        buckets[key] = (buckets[key] || 0) + amount;
+        labels[key] = date.toLocaleString("default", { month: "short", year: "numeric" });
+      } else {
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        buckets[key] = (buckets[key] || 0) + amount;
+        labels[key] = date.toLocaleDateString("default", { month: "short", day: "numeric" });
+      }
+    });
+
+    return Object.keys(buckets)
+      .sort()
+      .map((key) => ({ label: labels[key], value: buckets[key] }));
+  }, [filteredSales, chartView]);
 
   const totalSales = filteredSales.reduce(
     (sum, sale) => sum + Number(sale.total_amount || 0),
@@ -148,9 +173,24 @@ function Reports() {
 
       {/* FILTER */}
       <div className="report-filter">
-        <button onClick={() => setFilter("all")}>All</button>
-        <button onClick={() => setFilter("today")}>Today</button>
-        <button onClick={() => setFilter("month")}>Month</button>
+        <button
+          className={filter === "all" ? "active" : ""}
+          onClick={() => setFilter("all")}
+        >
+          All
+        </button>
+        <button
+          className={filter === "today" ? "active" : ""}
+          onClick={() => setFilter("today")}
+        >
+          Today
+        </button>
+        <button
+          className={filter === "month" ? "active" : ""}
+          onClick={() => setFilter("month")}
+        >
+          Month
+        </button>
       </div>
 
       {/* CARDS */}
@@ -178,6 +218,47 @@ function Reports() {
             {lowStockProducts.slice(0, 3).map(p => p.name).join(", ")}
           </small>
         </div>
+      </div>
+
+      <div className="report-panel">
+        <div className="report-panel-header">
+          <h3>Sales Bar Chart</h3>
+          <div className="report-chart-controls">
+            <button
+              className={chartView === "daily" ? "active" : ""}
+              onClick={() => setChartView("daily")}
+            >
+              Daily
+            </button>
+            <button
+              className={chartView === "monthly" ? "active" : ""}
+              onClick={() => setChartView("monthly")}
+            >
+              Monthly
+            </button>
+          </div>
+        </div>
+
+        {chartData.length > 0 ? (
+          <div className="sales-bar-chart">
+            {chartData.map((item) => {
+              const maxValue = Math.max(...chartData.map((row) => row.value), 1);
+              const width = (item.value / maxValue) * 100;
+
+              return (
+                <div key={item.label} className="sales-bar-row">
+                  <span className="bar-label">{item.label}</span>
+                  <div className="bar-track">
+                    <div className="bar-fill" style={{ width: `${width}%` }} />
+                  </div>
+                  <span className="bar-value">Rs. {item.value.toFixed(2)}</span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="chart-empty">No sales data available for this view.</p>
+        )}
       </div>
 
       {/* BEST SELLING */}

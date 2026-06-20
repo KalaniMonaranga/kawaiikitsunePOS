@@ -37,9 +37,7 @@ function Header() {
           Logout
         </button>
 
-        <input type="text" placeholder="Search..." />
-
-        <button onClick={() => navigate("/sales")}>
+        <button onClick={() => navigate("/sales") }>
           + New Sale
         </button>
       </div>

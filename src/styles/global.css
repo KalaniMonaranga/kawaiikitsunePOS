@@ -120,14 +120,6 @@ body {
   gap: 12px;
 }
 
-.header-actions input {
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 14px;
-  outline: none;
-  min-width: 240px;
-}
-
 .header-actions button,
 .panel button {
   border: none;
@@ -378,6 +370,98 @@ body {
   gap: 14px;
 }
 
+.page-container {
+  background: white;
+  border-radius: 26px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  margin-top: 22px;
+}
+
+.customer-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.customer-form input,
+.customer-form button,
+.page-container > input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #e5ddec;
+  border-radius: 16px;
+  outline: none;
+  background: #fdf9fe;
+  color: var(--secondary);
+}
+
+.customer-form button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 0;
+}
+
+.customer-form button:hover,
+.page-container > button:hover {
+  background: var(--secondary);
+}
+
+.page-container > input {
+  margin-bottom: 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-container > input:focus,
+.customer-form input:focus {
+  border-color: rgba(130, 86, 211, 0.5);
+  box-shadow: 0 0 0 4px rgba(130, 86, 211, 0.08);
+}
+
+.page-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.page-container thead th,
+.page-container tbody td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.page-container thead th {
+  background: #f8f3fa;
+  color: var(--secondary);
+}
+
+.page-container tbody tr:hover {
+  background: #faf6fc;
+}
+
+.page-container td button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.page-container td button:first-of-type {
+  background: #ead6df;
+  color: var(--secondary);
+  margin-right: 8px;
+}
+
+.page-container td button:last-of-type {
+  background: #ffdddd;
+  color: #b00020;
+}
+
 .anime-product-form input,
 .anime-product-form select,
 .anime-product-form textarea {
@@ -582,6 +666,7 @@ body {
 }
 
 .sales-search-row input,
+.sales-products input,
 .cart-panel input,
 .cart-panel select,
 .bill-summary input,
@@ -591,6 +676,16 @@ body {
   border: 1px solid #e5ddec;
   border-radius: 16px;
   outline: none;
+  background: #fdf9fe;
+  color: var(--secondary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sales-products input:focus,
+.cart-panel input:focus,
+.bill-summary input:focus {
+  border-color: rgba(130, 86, 211, 0.5);
+  box-shadow: 0 0 0 4px rgba(130, 86, 211, 0.08);
 }
 
 .product-sale-grid {
@@ -1082,6 +1177,76 @@ body {
   margin-bottom: 16px;
 }
 
+.report-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.report-chart-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.report-chart-controls button {
+  border: none;
+  background: #ead6df;
+  color: var(--secondary);
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.report-chart-controls button.active {
+  background: var(--primary);
+  color: white;
+}
+
+.sales-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sales-bar-row {
+  display: grid;
+  grid-template-columns: 1.8fr 4fr 1.2fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar-label {
+  font-size: 13px;
+  color: var(--secondary);
+}
+
+.bar-track {
+  height: 14px;
+  background: #f1eff8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 999px;
+}
+
+.bar-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.chart-empty {
+  color: var(--muted);
+  margin: 0;
+}
+
 .report-list {
   display: flex;
   flex-direction: column;
@@ -1265,26 +1430,25 @@ body {
   background: var(--secondary);
 }
 
-/* ================= CALCULATOR FLOAT ================= */
+/* ================= CALCULATOR ================= */
 
 .calculator {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 220px;
-  background: white;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background: #f8f3fa;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  padding: 12px;
-  z-index: 999;
+  border: 1px solid #ead6df;
+  padding: 16px;
+  margin-top: 16px;
 }
 
 .calculator input {
   width: 100%;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   border: 1px solid #ddd;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
   text-align: right;
   font-weight: bold;
 }
@@ -1292,13 +1456,13 @@ body {
 .calculator .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
 .calculator button {
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #f1e9f7;
   cursor: pointer;
   font-weight: bold;
@@ -1306,6 +1470,22 @@ body {
 
 .calculator button:hover {
   background: #ead6df;
+}
+
+.calculator-toggle {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: 1px solid #e5ddec;
+  border-radius: 16px;
+  background: white;
+  color: var(--secondary);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.calculator-toggle:hover {
+  background: #f8f3fa;
 }
 
 /* ================= LOW STOCK IMPROVEMENT ================= */

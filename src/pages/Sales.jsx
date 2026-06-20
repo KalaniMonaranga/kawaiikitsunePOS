@@ -53,6 +53,7 @@ function Sales() {
 
   const [paidAmount, setPaidAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [showCalculator, setShowCalculator] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -312,12 +313,19 @@ function Sales() {
           <option>QR</option>
         </select>
 
-        <button onClick={completeSale}>
+        <button className="complete-btn" onClick={completeSale}>
           Complete Sale
         </button>
 
-        {/* CALCULATOR */}
-        <Calculator />
+        <button
+          type="button"
+          className="calculator-toggle"
+          onClick={() => setShowCalculator((prev) => !prev)}
+        >
+          {showCalculator ? "Hide Calculator" : "Show Calculator"}
+        </button>
+
+        {showCalculator && <Calculator />}
       </div>
     </div>
   );
