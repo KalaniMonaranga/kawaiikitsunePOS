@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import jsPDF from "jspdf";
+import logo from "../assets/logo.png";
 
 /* ================= CALCULATOR ================= */
 function Calculator() {
@@ -166,6 +167,7 @@ function Sales() {
               background: white;
             }
             .receipt { text-align: center; }
+            .receipt-logo { width: 40px; height: auto; margin: 0 auto 4px; }
             .logo { font-size: 13pt; font-weight: bold; margin: 4px 0 2px; letter-spacing: 1px; }
             .tagline { font-size: 7pt; margin-bottom: 4px; letter-spacing: 0.5px; }
             .separator { border-top: 1px dashed #000; margin: 4px 0; }
@@ -179,7 +181,8 @@ function Sales() {
         </head>
         <body>
           <div class="receipt">
-            <div class="logo">🦊 KAWAII KITSUNE 🦊</div>
+            <div><img src="${logo}" alt="Kawaii Kitsune" class="receipt-logo" /></div>
+            <div class="logo">KAWAII KITSUNE</div>
             <div class="tagline">Anime • Manga • Collectibles</div>
             <div class="separator"></div>
             
