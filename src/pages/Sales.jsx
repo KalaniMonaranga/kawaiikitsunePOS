@@ -127,62 +127,104 @@ function Sales() {
 
   function openPrintWindow(saleData, items, meta) {
     try {
-      // Open a new tab/window without forcing a specific size so browser default/previous behavior remains
       const w = window.open("", "_blank");
       if (!w) return;
 
-      // Create basic document then clone current app styles so print looks the same
-      w.document.open();
-      w.document.write('<!doctype html><html><head><title>Receipt</title></head><body></body></html>');
-      w.document.close();
-
-      // Clone existing stylesheets and style tags to preserve original app styling
-      try {
-        document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
-          w.document.head.appendChild(node.cloneNode(true));
-        });
-      } catch (err) {
-        // If any stylesheet is not accessible, skip cloning — fallback to minimal styling
-        console.warn("Could not clone some styles for print", err);
-      }
-
       const itemsHtml = items
         .map(
-          (it) =>
-            `<tr><td>${it.name}</td><td style="text-align:center">${it.cartQty}</td><td style="text-align:right">Rs. ${Number(
-              it.selling_price
-            ).toFixed(2)}</td><td style="text-align:right">Rs. ${(
-              it.cartQty * Number(it.selling_price)
-            ).toFixed(2)}</td></tr>`
+          (it) => `
+            <div style="display:flex;justify-content:space-between;font-size:9pt;margin:2px 0">
+              <span>${it.name}</span>
+              <span>${it.cartQty} x Rs.${Number(it.selling_price).toFixed(2)}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:9pt;margin:2px 0 6px 0">
+              <span></span>
+              <span>Rs.${(it.cartQty * Number(it.selling_price)).toFixed(2)}</span>
+            </div>
+          `
         )
         .join("");
 
+      const receiptDate = new Date(saleData.created_at);
+      const dateStr = receiptDate.toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const timeStr = receiptDate.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+
       const html = `
-        <div class="receipt-print">
-          <h2>Kawaii Kitsune</h2>
-          <div>Bill No: ${saleData.bill_no}</div>
-          <div>Customer: ${meta.customer}</div>
-          <div>Date: ${new Date(saleData.created_at).toLocaleString()}</div>
-          <table>
-            <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th></tr></thead>
-            <tbody>
-              ${itemsHtml}
-            </tbody>
-          </table>
-          <div style="margin-top:12px">
-            <div>Subtotal: Rs. ${meta.subtotal.toFixed(2)}</div>
-            <div>Discount: Rs. ${Number(meta.discount || 0).toFixed(2)}</div>
-            <div><strong>Total: Rs. ${meta.total.toFixed(2)}</strong></div>
-            <div>Paid: Rs. ${Number(meta.paid || 0).toFixed(2)}</div>
-            <div>Change: Rs. ${Number(meta.change || 0).toFixed(2)}</div>
-            <div>Payment: ${meta.paymentMethod}</div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Receipt</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+              font-family: 'Courier New', monospace;
+              width: 58mm;
+              padding: 3mm;
+              font-size: 10pt;
+              line-height: 1.2;
+              background: white;
+            }
+            .receipt { text-align: center; }
+            .logo { font-size: 13pt; font-weight: bold; margin: 4px 0 2px; letter-spacing: 1px; }
+            .tagline { font-size: 7pt; margin-bottom: 4px; letter-spacing: 0.5px; }
+            .separator { border-top: 1px dashed #000; margin: 4px 0; }
+            .info { text-align: left; font-size: 9pt; margin: 2px 0; }
+            .items { margin: 4px 0; text-align: left; }
+            .totals { margin: 4px 0; font-size: 9pt; }
+            .total-line { display: flex; justify-content: space-between; margin: 2px 0; }
+            .total-row { font-weight: bold; font-size: 10pt; margin: 3px 0; }
+            .footer { text-align: center; font-size: 8pt; margin: 6px 0 0; }
+          </style>
+        </head>
+        <body>
+          <div class="receipt">
+            <div class="logo">🦊 KAWAII KITSUNE 🦊</div>
+            <div class="tagline">Anime • Manga • Collectibles</div>
+            <div class="separator"></div>
+            
+            <div class="info">Bill No: ${saleData.bill_no}</div>
+            <div class="info">Cashier: Kalani</div>
+            <div class="info">Customer: ${meta.customer}</div>
+            <div class="info">Date: ${dateStr}, ${timeStr}</div>
+            
+            <div class="separator"></div>
+            <div class="items">${itemsHtml}</div>
+            <div class="separator"></div>
+            
+            <div class="totals">
+              <div class="total-line">
+                <span>Subtotal</span>
+                <span>Rs.${meta.subtotal.toFixed(2)}</span>
+              </div>
+              ${Number(meta.discount || 0) > 0 ? `<div class="total-line">
+                <span>Discount</span>
+                <span>-Rs.${Number(meta.discount || 0).toFixed(2)}</span>
+              </div>` : ""}
+              <div class="total-line total-row">
+                <span>Total</span>
+                <span>Rs.${meta.total.toFixed(2)}</span>
+              </div>
+              <div class="total-line">
+                <span>Paid</span>
+                <span>Rs.${Number(meta.paid || 0).toFixed(2)}</span>
+              </div>
+              <div class="total-line">
+                <span>Change</span>
+                <span>Rs.${Number(meta.change || 0).toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <div class="separator"></div>
+            <div class="footer">Thank you!<br>Come again 🎊</div>
           </div>
-          <p style="margin-top:18px">Thank you for your purchase!</p>
-        </div>
+        </body>
+        </html>
       `;
 
-      w.document.body.innerHTML = html;
-      w.document.title = "Receipt";
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
       w.focus();
       w.print();
     } catch (e) {
