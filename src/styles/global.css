@@ -110,6 +110,13 @@ body {
   font-size: 28px;
 }
 
+.header-logo {
+  height: 50px;
+  width: auto;
+  margin-bottom: 8px;
+  object-fit: contain;
+}
+
 .header p {
   color: var(--muted);
   margin-top: 4px;

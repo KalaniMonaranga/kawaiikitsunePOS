@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
+import logo from "../assets/logo.png";
 
 function Header() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function Header() {
   return (
     <header className="header">
       <div>
+        <img src={logo} alt="Kawaii Kitsune Logo" className="header-logo" />
         <h1>{title}</h1>
         <p>Welcome back, Kalani</p>
       </div>
