@@ -167,15 +167,30 @@ function Reports() {
   async function deleteSale(sale) {
     if (!sale || !sale.id) return;
 
-    const pwd = window.prompt("Enter admin password to delete this sale:");
+    const pwd = window.prompt("Enter your login password to confirm deletion:");
     if (pwd === null) return; // user cancelled
 
-    // Check admin password via env var. Set VITE_ADMIN_PASSWORD in your .env
-    if (pwd !== import.meta.env.VITE_ADMIN_PASSWORD) {
-      return alert("Incorrect password");
-    }
+    // Re-authenticate current user with provided password (use same flow as login)
+    try {
+      const { data: currentUserData } = await supabase.auth.getUser();
+      const currentEmail = currentUserData?.user?.email;
 
-    if (!window.confirm(`Delete sale ${sale.bill_no}? This will remove totals and restock items.`)) return;
+      if (!currentEmail) return alert("No authenticated user found. Please login first.");
+
+      const { error: authErr } = await supabase.auth.signInWithPassword({
+        email: currentEmail,
+        password: pwd,
+      });
+
+      if (authErr) {
+        return alert("Incorrect password");
+      }
+
+      if (!window.confirm(`Delete sale ${sale.bill_no}? This will remove totals and restock items.`)) return;
+    } catch (e) {
+      console.error(e);
+      return alert("Authentication failed. Cannot delete sale.");
+    }
 
     try {
       // Fetch sale items
