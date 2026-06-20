@@ -127,8 +127,24 @@ function Sales() {
 
   function openPrintWindow(saleData, items, meta) {
     try {
-      const w = window.open("", "_blank", "width=600,height=800");
+      // Open a new tab/window without forcing a specific size so browser default/previous behavior remains
+      const w = window.open("", "_blank");
       if (!w) return;
+
+      // Create basic document then clone current app styles so print looks the same
+      w.document.open();
+      w.document.write('<!doctype html><html><head><title>Receipt</title></head><body></body></html>');
+      w.document.close();
+
+      // Clone existing stylesheets and style tags to preserve original app styling
+      try {
+        document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
+          w.document.head.appendChild(node.cloneNode(true));
+        });
+      } catch (err) {
+        // If any stylesheet is not accessible, skip cloning — fallback to minimal styling
+        console.warn("Could not clone some styles for print", err);
+      }
 
       const itemsHtml = items
         .map(
@@ -142,42 +158,33 @@ function Sales() {
         .join("");
 
       const html = `
-        <html><head><title>Receipt</title>
-        <style>
-          body{font-family:Arial,Helvetica,sans-serif;padding:18px;color:#222}
-          h2{margin-bottom:6px}
-          table{width:100%;border-collapse:collapse;margin-top:12px}
-          th,td{padding:8px;border-bottom:1px solid #eee}
-          .right{text-align:right}
-        </style>
-        </head><body>
-        <h2>Kawaii Kitsune</h2>
-        <div>Bill No: ${saleData.bill_no}</div>
-        <div>Customer: ${meta.customer}</div>
-        <div>Date: ${new Date(saleData.created_at).toLocaleString()}</div>
-        <table>
-          <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead>
-          <tbody>
-            ${itemsHtml}
-          </tbody>
-        </table>
-        <div style="margin-top:12px">
-          <div>Subtotal: Rs. ${meta.subtotal.toFixed(2)}</div>
-          <div>Discount: Rs. ${Number(meta.discount || 0).toFixed(2)}</div>
-          <div><strong>Total: Rs. ${meta.total.toFixed(2)}</strong></div>
-          <div>Paid: Rs. ${Number(meta.paid || 0).toFixed(2)}</div>
-          <div>Change: Rs. ${Number(meta.change || 0).toFixed(2)}</div>
-          <div>Payment: ${meta.paymentMethod}</div>
+        <div class="receipt-print">
+          <h2>Kawaii Kitsune</h2>
+          <div>Bill No: ${saleData.bill_no}</div>
+          <div>Customer: ${meta.customer}</div>
+          <div>Date: ${new Date(saleData.created_at).toLocaleString()}</div>
+          <table>
+            <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th></tr></thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div style="margin-top:12px">
+            <div>Subtotal: Rs. ${meta.subtotal.toFixed(2)}</div>
+            <div>Discount: Rs. ${Number(meta.discount || 0).toFixed(2)}</div>
+            <div><strong>Total: Rs. ${meta.total.toFixed(2)}</strong></div>
+            <div>Paid: Rs. ${Number(meta.paid || 0).toFixed(2)}</div>
+            <div>Change: Rs. ${Number(meta.change || 0).toFixed(2)}</div>
+            <div>Payment: ${meta.paymentMethod}</div>
+          </div>
+          <p style="margin-top:18px">Thank you for your purchase!</p>
         </div>
-        <p style="margin-top:18px">Thank you for your purchase!</p>
-        </body></html>
       `;
 
-      w.document.write(html);
-      w.document.close();
+      w.document.body.innerHTML = html;
+      w.document.title = "Receipt";
       w.focus();
       w.print();
-      // leave window open for user to close or browser to handle
     } catch (e) {
       console.error("Print error", e);
     }
