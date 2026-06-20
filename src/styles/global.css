@@ -1182,3 +1182,144 @@ body {
   border-radius: 999px;
   font-weight: 800;
 }
+
+/* ================= SALES IMPROVEMENTS ================= */
+
+.cart-items {
+  margin: 16px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr 70px 40px;
+  gap: 10px;
+  align-items: center;
+  background: #f8f3fa;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.cart-item strong {
+  color: var(--secondary);
+}
+
+.cart-item p {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.cart-item input {
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.cart-item button {
+  background: #ffdddd;
+  border: none;
+  color: #b00020;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* BILL SUMMARY CLEAN */
+.bill-summary {
+  border-top: 1px dashed #d8c4e8;
+  padding-top: 16px;
+  margin-top: 10px;
+}
+
+.bill-summary div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.bill-summary strong {
+  font-size: 20px;
+  color: var(--secondary);
+}
+
+/* DISCOUNT STYLE */
+.discount-row {
+  color: #b00020;
+  font-weight: bold;
+}
+
+/* COMPLETE BUTTON */
+.complete-btn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  padding: 14px;
+  border-radius: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.complete-btn:hover {
+  background: var(--secondary);
+}
+
+/* ================= CALCULATOR FLOAT ================= */
+
+.calculator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 220px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 12px;
+  z-index: 999;
+}
+
+.calculator input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.calculator .buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.calculator button {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #f1e9f7;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.calculator button:hover {
+  background: #ead6df;
+}
+
+/* ================= LOW STOCK IMPROVEMENT ================= */
+
+.low-stock-item {
+  background: #fff1f1;
+  border: 1px solid #ffc9c9;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.low-stock-item span {
+  background: #b00020;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 999px;
+}

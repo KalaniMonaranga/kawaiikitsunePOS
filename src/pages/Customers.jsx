@@ -22,7 +22,7 @@ function Customers() {
     const { data, error } = await supabase
       .from("customers")
       .select("*")
-      .order("id", { ascending: true });
+      .order("id");
 
     if (error) return alert(error.message);
     setCustomers(data || []);
@@ -32,63 +32,27 @@ function Customers() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  async function checkDuplicate() {
-    const { data } = await supabase
-      .from("customers")
-      .select("*")
-      .or(`phone.eq.${form.phone},email.eq.${form.email || "NO_EMAIL"}`);
-
-    const duplicate = data?.find((item) => item.id !== editId);
-
-    if (!duplicate) return false;
-
-    if (duplicate.phone === form.phone) {
-      alert("This phone number already exists");
-      return true;
-    }
-
-    if (form.email && duplicate.email === form.email) {
-      alert("This email already exists");
-      return true;
-    }
-
-    return false;
-  }
-
   async function saveCustomer() {
     if (!form.name || !form.phone) {
-      alert("Customer name and phone number are required");
+      alert("Name and phone required");
       return;
     }
 
-    const isDuplicate = await checkDuplicate();
-    if (isDuplicate) return;
-
-    const customerData = {
+    const dataToSave = {
       name: form.name.trim(),
       phone: form.phone.trim(),
-      email: form.email.trim() || null,
-      address: form.address.trim() || null,
+      email: form.email || null,
+      address: form.address || null,
     };
 
     if (editId) {
-      const { error } = await supabase
-        .from("customers")
-        .update(customerData)
-        .eq("id", editId);
-
-      if (error) return alert(error.message);
-      alert("Customer updated");
+      await supabase.from("customers").update(dataToSave).eq("id", editId);
+      alert("Updated");
     } else {
-      const { error } = await supabase.from("customers").insert([
-        {
-          ...customerData,
-          loyalty_points: 0,
-        },
+      await supabase.from("customers").insert([
+        { ...dataToSave, loyalty_points: 0 },
       ]);
-
-      if (error) return alert(error.message);
-      alert("Customer saved");
+      alert("Saved");
     }
 
     setForm(emptyForm);
@@ -96,161 +60,73 @@ function Customers() {
     fetchCustomers();
   }
 
-  function editCustomer(customer) {
-    setEditId(customer.id);
-    setForm({
-      name: customer.name || "",
-      phone: customer.phone || "",
-      email: customer.email || "",
-      address: customer.address || "",
-    });
+  function editCustomer(c) {
+    setEditId(c.id);
+    setForm(c);
   }
 
   async function deleteCustomer(id) {
-    if (!window.confirm("Delete this customer?")) return;
-
-    const { error } = await supabase.from("customers").delete().eq("id", id);
-
-    if (error) return alert(error.message);
-
-    alert("Customer deleted");
+    if (!window.confirm("Delete?")) return;
+    await supabase.from("customers").delete().eq("id", id);
     fetchCustomers();
   }
 
-  function cancelEdit() {
-    setEditId(null);
-    setForm(emptyForm);
-  }
-
-  const filteredCustomers = customers.filter((customer) => {
-    const keyword = search.toLowerCase();
-
-    return (
-      customer.name?.toLowerCase().includes(keyword) ||
-      customer.phone?.toLowerCase().includes(keyword) ||
-      customer.email?.toLowerCase().includes(keyword)
-    );
-  });
+  const filtered = customers.filter((c) =>
+    `${c.name}${c.phone}${c.email}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 
   return (
-    <div className="crud-page">
-      <div className="page-top">
-        <div>
-          <h2>Customers</h2>
-          <p>Add, update, search and manage loyal customers.</p>
-        </div>
+    <div className="page-container">
+      <h2>Customers</h2>
+
+      {/* FORM */}
+      <div className="customer-form">
+        <input name="name" placeholder="Name" value={form.name} onChange={handleChange} />
+        <input name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
+        <input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
+        <input name="address" placeholder="Address" value={form.address} onChange={handleChange} />
+
+        <button onClick={saveCustomer}>
+          {editId ? "Update" : "Save"}
+        </button>
       </div>
 
-      <div className="customer-layout">
-        <div className="customer-form-card">
-          <h3>{editId ? "Update Customer" : "Add New Customer"}</h3>
+      {/* SEARCH */}
+      <input
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-          <div className="customer-form-grid">
-            <input
-              name="name"
-              placeholder="Customer name *"
-              value={form.name}
-              onChange={handleChange}
-            />
+      {/* TABLE */}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Points</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-            <input
-              name="phone"
-              placeholder="Phone number *"
-              value={form.phone}
-              onChange={handleChange}
-            />
-
-            <input
-              name="email"
-              placeholder="Email optional"
-              value={form.email}
-              onChange={handleChange}
-            />
-
-            <textarea
-              name="address"
-              placeholder="Address / Notes optional"
-              value={form.address}
-              onChange={handleChange}
-            ></textarea>
-          </div>
-
-          <div className="form-actions">
-            <button onClick={saveCustomer}>
-              {editId ? "Update Customer" : "Save Customer"}
-            </button>
-
-            {editId && (
-              <button className="btn-light" onClick={cancelEdit}>
-                Cancel
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="customer-info-card">
-          <h3>Loyalty System</h3>
-          <p>Customers earn loyalty points automatically from purchases.</p>
-          <div className="loyalty-box">2% from each purchase</div>
-        </div>
-      </div>
-
-      <div className="crud-card">
-        <input
-          className="search-input"
-          placeholder="Search by name, phone or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Loyalty Points</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredCustomers.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="empty-table">
-                    No customers found.
-                  </td>
-                </tr>
-              ) : (
-                filteredCustomers.map((customer) => (
-                  <tr key={customer.id}>
-                    <td>{customer.name}</td>
-                    <td>{customer.phone}</td>
-                    <td>{customer.email || "-"}</td>
-                    <td>{Number(customer.loyalty_points || 0).toFixed(2)}</td>
-                    <td>
-                      <button
-                        className="btn-edit"
-                        onClick={() => editCustomer(customer)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="btn-delete"
-                        onClick={() => deleteCustomer(customer.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <tbody>
+          {filtered.map((c) => (
+            <tr key={c.id}>
+              <td>{c.name}</td>
+              <td>{c.phone}</td>
+              <td>{c.email || "-"}</td>
+              <td>{Number(c.loyalty_points || 0).toFixed(2)}</td>
+              <td>
+                <button onClick={() => editCustomer(c)}>Edit</button>
+                <button onClick={() => deleteCustomer(c.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

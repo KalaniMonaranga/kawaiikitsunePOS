@@ -71,46 +71,50 @@ function Reports() {
 
   const filteredSaleIds = filteredSales.map((sale) => sale.id);
 
-const filteredSaleItems = saleItems.filter((item) =>
-  filteredSaleIds.includes(item.sale_id)
-);
+  const filteredSaleItems = saleItems.filter((item) =>
+    filteredSaleIds.includes(item.sale_id)
+  );
 
-const dailyProfit = filteredSaleItems.reduce((sum, item) => {
-  const product = products.find((p) => p.id === item.product_id);
+  /* ✅ FIXED PROFIT CALCULATION */
+  const profit = filteredSaleItems.reduce((sum, item) => {
+    const product = products.find((p) => p.id === item.product_id);
+    if (!product) return sum;
 
-  if (!product) return sum;
+    const selling = Number(item.unit_price || product.selling_price || 0);
+    const cost = Number(product.cost_price || 0);
 
-  const profitPerItem =
-    Number(product.selling_price || 0) - Number(product.cost_price || 0);
-
-  return sum + profitPerItem * Number(item.quantity || 0);
-}, 0);
+    return sum + (selling - cost) * Number(item.quantity || 0);
+  }, 0);
 
   const lowStockProducts = products.filter(
     (product) => Number(product.quantity || 0) <= 5
   );
 
+  /* ✅ FIXED BEST SELLING */
   const bestSellingProducts = useMemo(() => {
     const map = {};
 
     saleItems.forEach((item) => {
+      const product = products.find((p) => p.id === item.product_id);
+
       if (!map[item.product_id]) {
         map[item.product_id] = {
           product_id: item.product_id,
-          product_name: item.product_name || "Unknown Product",
+          product_name: product?.name || "Unknown Product",
           quantity: 0,
           total: 0,
         };
       }
 
       map[item.product_id].quantity += Number(item.quantity || 0);
-      map[item.product_id].total += Number(item.subtotal || 0);
+      map[item.product_id].total +=
+        Number(item.unit_price || 0) * Number(item.quantity || 0);
     });
 
     return Object.values(map)
       .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 5);
-  }, [saleItems]);
+  }, [saleItems, products]);
 
   const topCustomers = [...customers]
     .sort(
@@ -119,66 +123,37 @@ const dailyProfit = filteredSaleItems.reduce((sum, item) => {
         Number(a.loyalty_points || 0)
     )
     .slice(0, 5);
-    
+
   function exportToExcel() {
-  const reportData = filteredSales.map((sale) => ({
-    "Bill No": sale.bill_no,
-    Customer: sale.customer_name || "Customer",
-    "Total Amount": Number(sale.total_amount || 0),
-    "Paid Amount": Number(sale.paid_amount || 0),
-    "Change Amount": Number(sale.change_amount || 0),
-    "Payment Method": sale.payment_method || "-",
-    Date: new Date(sale.created_at).toLocaleString(),
-  }));
+    const reportData = filteredSales.map((sale) => ({
+      "Bill No": sale.bill_no,
+      Customer: sale.customer_name || "Customer",
+      "Total Amount": Number(sale.total_amount || 0),
+      Date: new Date(sale.created_at).toLocaleString(),
+    }));
 
-  const worksheet = XLSX.utils.json_to_sheet(reportData);
-  const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(reportData);
+    const workbook = XLSX.utils.book_new();
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
-
-  XLSX.writeFile(workbook, `Kawaii-Kitsune-Sales-Report-${filter}.xlsx`);
-}
-
-  function printReport() {
-    window.print();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+    XLSX.writeFile(workbook, `Sales-Report-${filter}.xlsx`);
   }
 
   return (
-    <div className="reports-page">
-      <div className="page-top">
-        <div>
-          <h2>Reports</h2>
-          <p>View sales, customers, stock and product performance.</p>
-        </div>
-
-        <button className="report-print-btn" onClick={exportToExcel}>
-          Export Excel
-        </button>
+    <div className="page-container">
+      <div className="page-header">
+        <h2>Reports</h2>
+        <button onClick={exportToExcel}>Export Excel</button>
       </div>
 
+      {/* FILTER */}
       <div className="report-filter">
-        <button
-          className={filter === "all" ? "active" : ""}
-          onClick={() => setFilter("all")}
-        >
-          All
-        </button>
-
-        <button
-          className={filter === "today" ? "active" : ""}
-          onClick={() => setFilter("today")}
-        >
-          Today
-        </button>
-
-        <button
-          className={filter === "month" ? "active" : ""}
-          onClick={() => setFilter("month")}
-        >
-          This Month
-        </button>
+        <button onClick={() => setFilter("all")}>All</button>
+        <button onClick={() => setFilter("today")}>Today</button>
+        <button onClick={() => setFilter("month")}>Month</button>
       </div>
 
+      {/* CARDS */}
       <div className="report-cards">
         <div className="report-card">
           <h3>Total Sales</h3>
@@ -190,115 +165,45 @@ const dailyProfit = filteredSaleItems.reduce((sum, item) => {
           <h2>{totalBills}</h2>
         </div>
 
+        {/* ✅ CHANGED WORD */}
         <div className="report-card">
-        <h3>Daily Profit</h3>
-        <h2>Rs. {dailyProfit.toFixed(2)}</h2>
-      </div>
+          <h3>Profit</h3>
+          <h2>Rs. {profit.toFixed(2)}</h2>
+        </div>
 
         <div className="report-card">
-          <h3>Low Stock Items</h3>
+          <h3>Low Stock</h3>
           <h2>{lowStockProducts.length}</h2>
+          <small>
+            {lowStockProducts.slice(0, 3).map(p => p.name).join(", ")}
+          </small>
         </div>
       </div>
 
-      <div className="reports-grid">
-        <div className="report-panel">
-          <h3>Recent Sales</h3>
+      {/* BEST SELLING */}
+      <div className="report-panel">
+        <h3>Best Selling Products</h3>
 
-          {filteredSales.length === 0 ? (
-            <p>No sales found.</p>
-          ) : (
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Bill No</th>
-                    <th>Customer</th>
-                    <th>Total</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
+        {bestSellingProducts.map((item, i) => (
+          <div key={i} className="report-list-item">
+            <strong>{item.product_name}</strong>
+            <span>{item.quantity} sold</span>
+          </div>
+        ))}
+      </div>
 
-                <tbody>
-                  {filteredSales.slice(0, 10).map((sale) => (
-                    <tr key={sale.id}>
-                      <td>{sale.bill_no}</td>
-                      <td>{sale.customer_name || "Customer"}</td>
-                      <td>Rs. {Number(sale.total_amount || 0).toFixed(2)}</td>
-                      <td>{new Date(sale.created_at).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+      {/* LOW STOCK LIST */}
+      <div className="report-panel">
+        <h3>Low Stock Products</h3>
 
-        <div className="report-panel">
-          <h3>Best Selling Products</h3>
-
-          {bestSellingProducts.length === 0 ? (
-            <p>No product sales yet.</p>
-          ) : (
-            <div className="report-list">
-              {bestSellingProducts.map((item, index) => (
-                <div className="report-list-item" key={item.product_id}>
-                  <div>
-                    <strong>
-                      #{index + 1} {item.product_name}
-                    </strong>
-                    <p>Qty Sold: {item.quantity}</p>
-                  </div>
-                  <span>Rs. {item.total.toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="report-panel">
-          <h3>Top Loyal Customers</h3>
-
-          {topCustomers.length === 0 ? (
-            <p>No customer data yet.</p>
-          ) : (
-            <div className="report-list">
-              {topCustomers.map((customer, index) => (
-                <div className="report-list-item" key={customer.id}>
-                  <div>
-                    <strong>
-                      #{index + 1} {customer.name}
-                    </strong>
-                    <p>{customer.phone || "No phone"}</p>
-                  </div>
-                  <span>
-                    {Number(customer.loyalty_points || 0).toFixed(2)} pts
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="report-panel">
-          <h3>Low Stock Products</h3>
-
-          {lowStockProducts.length === 0 ? (
-            <p>No low stock products.</p>
-          ) : (
-            <div className="report-list">
-              {lowStockProducts.map((product) => (
-                <div className="report-list-item" key={product.id}>
-                  <div>
-                    <strong>{product.name}</strong>
-                    <p>Barcode: {product.barcode || "-"}</p>
-                  </div>
-                  <span>{product.quantity} left</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {lowStockProducts.map((product) => (
+          <div key={product.id} className="report-list-item">
+            <strong>{product.name}</strong>
+            <span style={{ color: product.quantity <= 2 ? "red" : "orange" }}>
+              {product.quantity} left
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
