@@ -150,16 +150,65 @@ function Reports() {
     .slice(0, 5);
 
   function exportToExcel() {
-    const reportData = filteredSales.map((sale) => ({
-      "Bill No": sale.bill_no,
-      Customer: sale.customer_name || "Customer",
-      "Total Amount": Number(sale.total_amount || 0),
-      Date: new Date(sale.created_at).toLocaleString(),
-    }));
+    // Build 2D array (AOA) so we can control types and layout
+    const rows = [];
+    // Title row
+    rows.push([`Sales Report - ${filter.toUpperCase()}`]);
+    rows.push([]); // empty row
+    // Header
+    rows.push(["Bill No", "Customer", "Total Amount", "Date"]);
 
-    const worksheet = XLSX.utils.json_to_sheet(reportData);
+    filteredSales.forEach((sale) => {
+      rows.push([
+        sale.bill_no,
+        sale.customer_name || "Customer",
+        Number(sale.total_amount || 0),
+        new Date(sale.created_at).toLocaleString(),
+      ]);
+    });
+
+    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+
+    // Set column widths
+    worksheet["!cols"] = [
+      { wch: 15 },
+      { wch: 30 },
+      { wch: 18 },
+      { wch: 25 },
+    ];
+
+    // Style header row (row index 2 in our sheet)
+    try {
+      const headerRow = 2;
+      for (let c = 0; c < 4; c++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: headerRow, c });
+        const cell = worksheet[cellAddress];
+        if (cell) {
+          cell.s = {
+            font: { bold: true, color: { rgb: "FFFFFFFF" } },
+            fill: { fgColor: { rgb: "FF6F42C1" } },
+            alignment: { horizontal: "center", vertical: "center" },
+          };
+        }
+      }
+
+      // Format total amount column as number with two decimals
+      const startRow = headerRow + 1;
+      const endRow = rows.length - 1;
+      for (let r = startRow; r <= endRow; r++) {
+        const addr = XLSX.utils.encode_cell({ r, c: 2 });
+        const cell = worksheet[addr];
+        if (cell) {
+          cell.t = "n";
+          cell.z = "#,##0.00";
+        }
+      }
+    } catch (e) {
+      // If styling not supported in environment, silently continue
+      console.warn("XLSX styling not fully supported:", e);
+    }
+
     const workbook = XLSX.utils.book_new();
-
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
     XLSX.writeFile(workbook, `Sales-Report-${filter}.xlsx`);
   }
