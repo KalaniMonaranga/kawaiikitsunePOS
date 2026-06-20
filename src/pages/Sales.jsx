@@ -162,21 +162,24 @@ function Sales() {
               font-family: 'Courier New', monospace;
               width: 58mm;
               padding: 3mm;
-              font-size: 10pt;
-              line-height: 1.2;
+              font-size: 9pt;
+              line-height: 1.3;
               background: white;
+              color: #000;
             }
             .receipt { text-align: center; }
             .receipt-logo { width: 40px; height: auto; margin: 0 auto 4px; }
-            .logo { font-size: 13pt; font-weight: bold; margin: 4px 0 2px; letter-spacing: 1px; }
-            .tagline { font-size: 7pt; margin-bottom: 4px; letter-spacing: 0.5px; }
-            .separator { border-top: 1px dashed #000; margin: 4px 0; }
-            .info { text-align: left; font-size: 9pt; margin: 2px 0; }
+            .logo { font-size: 12pt; font-weight: bold; margin: 4px 0 2px; letter-spacing: 0.8px; }
+            .tagline { font-size: 7pt; margin-bottom: 4px; letter-spacing: 0.4px; }
+            .separator { border-top: 1px dashed #000; margin: 5px 0; }
+            .info { text-align: left; font-size: 8.5pt; margin: 2px 0; }
             .items { margin: 4px 0; text-align: left; }
-            .totals { margin: 4px 0; font-size: 9pt; }
+            .item-name { font-size: 8.5pt; margin: 4px 0 0; }
+            .item-meta { display: flex; justify-content: space-between; font-size: 8.5pt; margin: 1px 0 4px; }
+            .totals { margin: 4px 0; font-size: 8.5pt; }
             .total-line { display: flex; justify-content: space-between; margin: 2px 0; }
-            .total-row { font-weight: bold; font-size: 10pt; margin: 3px 0; }
-            .footer { text-align: center; font-size: 8pt; margin: 6px 0 0; }
+            .total-row { font-weight: bold; font-size: 10pt; margin: 4px 0 0; }
+            .footer { text-align: center; font-size: 8pt; margin: 8px 0 0; }
           </style>
         </head>
         <body>
@@ -185,16 +188,16 @@ function Sales() {
             <div class="logo">KAWAII KITSUNE</div>
             <div class="tagline">Anime • Manga • Collectibles</div>
             <div class="separator"></div>
-            
+
             <div class="info">Bill No: ${saleData.bill_no}</div>
             <div class="info">Cashier: Kalani</div>
             <div class="info">Customer: ${meta.customer}</div>
-            <div class="info">Date: ${dateStr}, ${timeStr}</div>
-            
+            <div class="info">Date: ${dateStr} ${timeStr}</div>
+
             <div class="separator"></div>
             <div class="items">${itemsHtml}</div>
             <div class="separator"></div>
-            
+
             <div class="totals">
               <div class="total-line">
                 <span>Subtotal</span>
@@ -217,7 +220,7 @@ function Sales() {
                 <span>Rs.${Number(meta.change || 0).toFixed(2)}</span>
               </div>
             </div>
-            
+
             <div class="separator"></div>
             <div class="footer">Thank you!<br>Come again 🎊</div>
           </div>
