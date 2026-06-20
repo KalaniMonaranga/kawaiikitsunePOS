@@ -125,6 +125,64 @@ function Sales() {
     (c) => String(c.id) === String(customerId)
   );
 
+  function openPrintWindow(saleData, items, meta) {
+    try {
+      const w = window.open("", "_blank", "width=600,height=800");
+      if (!w) return;
+
+      const itemsHtml = items
+        .map(
+          (it) =>
+            `<tr><td>${it.name}</td><td style="text-align:center">${it.cartQty}</td><td style="text-align:right">Rs. ${Number(
+              it.selling_price
+            ).toFixed(2)}</td><td style="text-align:right">Rs. ${(
+              it.cartQty * Number(it.selling_price)
+            ).toFixed(2)}</td></tr>`
+        )
+        .join("");
+
+      const html = `
+        <html><head><title>Receipt</title>
+        <style>
+          body{font-family:Arial,Helvetica,sans-serif;padding:18px;color:#222}
+          h2{margin-bottom:6px}
+          table{width:100%;border-collapse:collapse;margin-top:12px}
+          th,td{padding:8px;border-bottom:1px solid #eee}
+          .right{text-align:right}
+        </style>
+        </head><body>
+        <h2>Kawaii Kitsune</h2>
+        <div>Bill No: ${saleData.bill_no}</div>
+        <div>Customer: ${meta.customer}</div>
+        <div>Date: ${new Date(saleData.created_at).toLocaleString()}</div>
+        <table>
+          <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Total</th></tr></thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+        <div style="margin-top:12px">
+          <div>Subtotal: Rs. ${meta.subtotal.toFixed(2)}</div>
+          <div>Discount: Rs. ${Number(meta.discount || 0).toFixed(2)}</div>
+          <div><strong>Total: Rs. ${meta.total.toFixed(2)}</strong></div>
+          <div>Paid: Rs. ${Number(meta.paid || 0).toFixed(2)}</div>
+          <div>Change: Rs. ${Number(meta.change || 0).toFixed(2)}</div>
+          <div>Payment: ${meta.paymentMethod}</div>
+        </div>
+        <p style="margin-top:18px">Thank you for your purchase!</p>
+        </body></html>
+      `;
+
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      w.print();
+      // leave window open for user to close or browser to handle
+    } catch (e) {
+      console.error("Print error", e);
+    }
+  }
+
   /* ================= COMPLETE SALE ================= */
 
   async function completeSale() {
@@ -187,6 +245,21 @@ function Sales() {
           loyalty_points: current + loyaltyPoints,
         })
         .eq("id", customerId);
+    }
+
+    // Print receipt in a new window (if allowed by browser)
+    try {
+      openPrintWindow(saleData, cart, {
+        customer: finalName,
+        subtotal,
+        discount,
+        total,
+        paid,
+        change,
+        paymentMethod,
+      });
+    } catch (e) {
+      console.error(e);
     }
 
     alert("Sale Completed!");
