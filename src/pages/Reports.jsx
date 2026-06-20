@@ -164,6 +164,78 @@ function Reports() {
     XLSX.writeFile(workbook, `Sales-Report-${filter}.xlsx`);
   }
 
+  async function deleteSale(sale) {
+    if (!sale || !sale.id) return;
+
+    const pwd = window.prompt("Enter admin password to delete this sale:");
+    if (pwd === null) return; // user cancelled
+
+    // Check admin password via env var. Set VITE_ADMIN_PASSWORD in your .env
+    if (pwd !== import.meta.env.VITE_ADMIN_PASSWORD) {
+      return alert("Incorrect password");
+    }
+
+    if (!window.confirm(`Delete sale ${sale.bill_no}? This will remove totals and restock items.`)) return;
+
+    try {
+      // Fetch sale items
+      const { data: items, error: itemsErr } = await supabase
+        .from("sale_items")
+        .select("*")
+        .eq("sale_id", sale.id);
+
+      if (itemsErr) throw itemsErr;
+
+      // Restock products
+      for (const it of items || []) {
+        // fetch current product
+        const { data: prodData, error: prodErr } = await supabase
+          .from("products")
+          .select("quantity")
+          .eq("id", it.product_id)
+          .single();
+
+        if (prodErr) {
+          console.warn("Product fetch failed for restock", it.product_id, prodErr);
+          continue;
+        }
+
+        const newQty = Number(prodData.quantity || 0) + Number(it.quantity || 0);
+
+        await supabase
+          .from("products")
+          .update({ quantity: newQty })
+          .eq("id", it.product_id);
+      }
+
+      // If sale had loyalty points, subtract from customer
+      if (sale.customer_id && Number(sale.loyalty_points_earned || 0) > 0) {
+        const { data: cust, error: custErr } = await supabase
+          .from("customers")
+          .select("loyalty_points")
+          .eq("id", sale.customer_id)
+          .single();
+
+        if (!custErr && cust) {
+          const updated = Math.max(0, Number(cust.loyalty_points || 0) - Number(sale.loyalty_points_earned || 0));
+          await supabase.from("customers").update({ loyalty_points: updated }).eq("id", sale.customer_id);
+        }
+      }
+
+      // Delete sale items
+      await supabase.from("sale_items").delete().eq("sale_id", sale.id);
+
+      // Delete sale
+      await supabase.from("sales").delete().eq("id", sale.id);
+
+      alert("Sale deleted and inventory restored.");
+      loadReportsData();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete sale. See console for details.");
+    }
+  }
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -271,6 +343,37 @@ function Reports() {
             <span>{item.quantity} sold</span>
           </div>
         ))}
+      </div>
+
+      {/* SALES LIST (with delete) */}
+      <div className="report-panel">
+        <h3>Sales List</h3>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Bill No</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSales.map((s) => (
+                <tr key={s.id}>
+                  <td>{s.bill_no}</td>
+                  <td>{s.customer_name || "Customer"}</td>
+                  <td>{new Date(s.created_at).toLocaleString()}</td>
+                  <td>Rs. {Number(s.total_amount || 0).toFixed(2)}</td>
+                  <td>
+                    <button className="btn-delete" onClick={() => deleteSale(s)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* LOW STOCK LIST */}
