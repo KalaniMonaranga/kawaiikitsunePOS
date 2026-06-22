@@ -8,6 +8,7 @@ function Sales() {
   const [discount, setDiscount] = useState(0);
   const [showCalculator, setShowCalculator] = useState(false);
   const [calc, setCalc] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchProducts();
@@ -55,49 +56,68 @@ function Sales() {
   function printReceipt() {
     const w = window.open("", "", "width=300,height=600");
     w.document.write(`
-    <html><body style="font-family:monospace;width:58mm">
-    <h3 style="text-align:center">Kawaii Kitsune</h3>
-    <hr/>
-    ${cart
-      .map(
-        (i) => `
-        <div>${i.name}</div>
+      <html>
+      <body style="font-family:monospace;width:58mm">
+        <h3 style="text-align:center">Kawaii Kitsune</h3>
+        <hr/>
+        ${cart
+          .map(
+            (i) => `
+            <div style="display:flex;justify-content:space-between">
+              <span>${i.name} x${i.qty}</span>
+              <span>${i.qty * i.price}</span>
+            </div>
+          `
+          )
+          .join("")}
+        <hr/>
         <div style="display:flex;justify-content:space-between">
-          <span>${i.qty} x ${i.price}</span>
-          <span>${i.qty * i.price}</span>
-        </div>`
-      )
-      .join("")}
-    <hr/>
-    <div style="display:flex;justify-content:space-between">
-      <b>Total</b><b>${total}</b>
-    </div>
-    <p style="text-align:center">Thank you 💜</p>
-    </body></html>
+          <b>Total</b><b>${total}</b>
+        </div>
+        <p style="text-align:center">Thank you 💜</p>
+      </body>
+      </html>
     `);
     w.document.close();
     w.print();
   }
 
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="sales-layout">
-      
-      {/* PRODUCTS */}
-      <div className="products-grid">
-        {products.map((p) => (
-          <div
-            key={p.id}
-            className="product-card"
-            onClick={() => addToCart(p)}
-          >
-            <h4>{p.name}</h4>
-            <p>{p.price}</p>
-          </div>
-        ))}
+    <div className="sales-page">
+
+      {/* LEFT SIDE */}
+      <div className="sales-left">
+
+        {/* SEARCH */}
+        <input
+          type="text"
+          placeholder="Search product..."
+          className="search-bar"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        {/* PRODUCTS */}
+        <div className="products-grid">
+          {filteredProducts.map((p) => (
+            <div
+              key={p.id}
+              className="product-card"
+              onClick={() => addToCart(p)}
+            >
+              <h4>{p.name}</h4>
+              <p>Rs {p.price}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* CART PANEL */}
-      <div className="cart-panel">
+      {/* RIGHT SIDE CART */}
+      <div className="sales-right">
         <h3>Cart</h3>
 
         {cart.map((item) => (
@@ -107,7 +127,7 @@ function Sales() {
           </div>
         ))}
 
-        <div className="divider"></div>
+        <hr />
 
         <div>Subtotal: {subtotal}</div>
 
@@ -123,22 +143,21 @@ function Sales() {
         <h2>Total: {total}</h2>
 
         <button className="checkout-btn" onClick={printReceipt}>
-          Checkout & Print
+          Print
         </button>
 
         <button
-          className="calc-toggle"
+          className="calc-btn"
           onClick={() => setShowCalculator(!showCalculator)}
         >
           🧮
         </button>
       </div>
 
-      {/* FLOATING CALCULATOR */}
+      {/* CALCULATOR */}
       {showCalculator && (
-        <div className="calculator-float">
+        <div className="calculator">
           <input value={calc} readOnly />
-
           <div className="calc-grid">
             {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"]
               .map((b) => (
@@ -149,6 +168,7 @@ function Sales() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

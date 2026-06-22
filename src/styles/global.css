@@ -286,3 +286,85 @@ body {
     font-family: monospace;
   }
 }
+
+.sales-page {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.sales-left {
+  flex: 2;
+}
+
+.sales-right {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* SEARCH */
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* PRODUCTS */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.product-card {
+  background: #6c2bd9;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* CART */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* BUTTONS */
+.checkout-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: #6c2bd9;
+  color: white;
+  border: none;
+}
+
+.calc-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px;
+  border-radius: 50%;
+}
+
+/* CALCULATOR */
+.calculator {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 220px;
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
