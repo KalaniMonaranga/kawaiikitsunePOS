@@ -32,7 +32,7 @@ function Sales() {
       setCart([...cart, { ...product, qty: 1 }]);
     }
   }
-
+  
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.qty,
     0
@@ -87,90 +87,94 @@ function Sales() {
   );
 
   return (
-    <div className="sales-page">
+  <div className="sales-container">
 
-      {/* LEFT SIDE */}
-      <div className="sales-left">
+    {/* LEFT SIDE */}
+    <div className="sales-left">
 
-        {/* SEARCH */}
+      {/* SEARCH */}
+      <input
+        type="text"
+        placeholder="Search product..."
+        className="search-bar"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {/* PRODUCTS */}
+      <div className="products-grid">
+        {filteredProducts.map((p) => (
+          <div
+            key={p.id}
+            className="product-card"
+            onClick={() => addToCart(p)}
+          >
+            <h4>{p.name}</h4>
+            <p>Rs {p.price}</p>
+          </div>
+        ))}
+      </div>
+
+    </div>
+
+    {/* RIGHT SIDE CART */}
+    <div className="sales-right">
+
+      <h3>Cart</h3>
+
+      {cart.map((item) => (
+        <div key={item.id} className="cart-item">
+          <span>{item.name} x {item.qty}</span>
+          <span>{item.qty * item.price}</span>
+        </div>
+      ))}
+
+      <hr />
+
+      <div>Subtotal: {subtotal}</div>
+
+      <div className="discount">
+        Discount:
         <input
-          type="text"
-          placeholder="Search product..."
-          className="search-bar"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          type="number"
+          value={discount}
+          onChange={(e) => setDiscount(Number(e.target.value))}
         />
+      </div>
 
-        {/* PRODUCTS */}
-        <div className="products-grid">
-          {filteredProducts.map((p) => (
-            <div
-              key={p.id}
-              className="product-card"
-              onClick={() => addToCart(p)}
-            >
-              <h4>{p.name}</h4>
-              <p>Rs {p.price}</p>
-            </div>
+      <h2>Total: {total}</h2>
+
+      <button className="checkout-btn" onClick={printReceipt}>
+        Print
+      </button>
+
+      <button
+        className="calc-btn"
+        onClick={() => setShowCalculator(!showCalculator)}
+      >
+        🧮
+      </button>
+
+    </div>
+
+    {/* CALCULATOR */}
+    {showCalculator && (
+      <div className="calculator">
+        <input value={calc} readOnly />
+
+        <div className="calc-grid">
+          {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"]
+            .map((b) => (
+              <button key={b} onClick={() => handleCalc(b)}>
+                {b}
+              </button>
           ))}
         </div>
       </div>
+    )}
 
-      {/* RIGHT SIDE CART */}
-      <div className="sales-right">
-        <h3>Cart</h3>
-
-        {cart.map((item) => (
-          <div key={item.id} className="cart-item">
-            <span>{item.name} x {item.qty}</span>
-            <span>{item.qty * item.price}</span>
-          </div>
-        ))}
-
-        <hr />
-
-        <div>Subtotal: {subtotal}</div>
-
-        <div className="discount">
-          Discount:
-          <input
-            type="number"
-            value={discount}
-            onChange={(e) => setDiscount(Number(e.target.value))}
-          />
-        </div>
-
-        <h2>Total: {total}</h2>
-
-        <button className="checkout-btn" onClick={printReceipt}>
-          Print
-        </button>
-
-        <button
-          className="calc-btn"
-          onClick={() => setShowCalculator(!showCalculator)}
-        >
-          🧮
-        </button>
-      </div>
-
-      {/* CALCULATOR */}
-      {showCalculator && (
-        <div className="calculator">
-          <input value={calc} readOnly />
-          <div className="calc-grid">
-            {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"]
-              .map((b) => (
-                <button key={b} onClick={() => handleCalc(b)}>
-                  {b}
-                </button>
-              ))}
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
+  </div>
+);
 }
 
 export default Sales;

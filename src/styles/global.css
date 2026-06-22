@@ -3,255 +3,177 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* ===== BODY ===== */
 body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  background: var(--bg-very-light) !important;
-  color: var(--black) !important;
-  -webkit-font-smoothing:antialiased;
+  background: #f4f6f9;
+  color: #333;
 }
 
-/* POS color palette variables */
-:root {
-  --purple-500: #6c2bd9;
-  --purple-600: #5a1fc0;
-  --light-rose: #ffd6e0;
-  --black: #111114;
-  --white: #ffffff;
-  --bg-very-light: #fbf6ff;
-}
-
-/* ===== HEADER ===== */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--purple-500);
-  color: var(--white);
-  padding: 14px 20px;
-  box-shadow: 0 2px 6px rgba(16,12,24,0.06);
-}
-
-.header h1 {
-  font-size: 22px;
-}
-
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.logout-btn {
-  background: var(--white);
-  color: var(--purple-600);
-  border: 1px solid rgba(0,0,0,0.06);
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 6px;
-  font-weight: 700;
-}
-
-.logout-btn:hover {
-  background: var(--light-rose);
-}
-
-/* ===== LAYOUT ===== */
-.app-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  width: 260px;
-  background: var(--white);
-  border-right: 1px solid rgba(0,0,0,0.06);
-  padding: 18px 14px;
-}
-
-.logo-box img { width: 56px; height: 56px; object-fit: contain; display:block; }
-.logo-box h2 { margin-top: 8px; font-size: 16px; color:var(--black); }
-.logo-box p { font-size: 12px; color: #777; margin-top:2px }
-
-.menu { margin-top: 18px; display:flex; flex-direction:column; gap:6px; }
-.menu-item { color: var(--black); text-decoration: none; padding: 10px 12px; border-radius:8px; display:block; }
-.menu-item:hover { background: rgba(108,43,217,0.06); }
-.menu-item.active { background: transparent; color:var(--purple-600); font-weight:700; border-left: 4px solid var(--purple-500); padding-left:8px; }
-
-.main-area { flex: 1; display:flex; flex-direction:column; min-height:100vh; }
-.page-content { padding: 18px; flex:1; }
-
-.footer { padding: 12px 18px; background: transparent; color: #666; font-size: 13px; }
-
-/* ===== SALES PAGE ===== */
-.sales-container {
-  display: flex;
-  gap: 20px;
+/* ===== PAGE LAYOUT ===== */
+.crud-page {
   padding: 20px;
 }
 
-/* LEFT SIDE (PRODUCTS) */
-.products-section {
-  flex: 2;
-  background: white;
-  padding: 15px;
+.page-top {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 5px;
+}
+
+/* ===== CARDS ===== */
+.crud-card,
+.panel,
+.product-form-card,
+.product-preview-card {
+  background: #fff;
+  padding: 18px;
   border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
 }
 
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
-}
-
-.product-card {
-  background: #ecf0f1;
+/* ===== INPUTS ===== */
+input,
+select,
+textarea {
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  width: 100%;
+}
+
+textarea {
+  resize: none;
+}
+
+/* ===== BUTTONS ===== */
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #6c5ce7;
+  color: white;
   cursor: pointer;
-  text-align: center;
   transition: 0.2s;
 }
 
-.product-card:hover {
-  background: #dcdde1;
+button:hover {
+  background: #5a4bd8;
 }
 
-/* RIGHT SIDE (CART) */
-.cart-section {
-  flex: 1;
+.btn-light {
+  background: #ddd;
+  color: #333;
+}
+
+.btn-edit {
+  background: #00b894;
+}
+
+.btn-delete {
+  background: #d63031;
+}
+
+/* ===== TABLE ===== */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  background: #fafafa;
+}
+
+.empty-table {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+/* ===== SEARCH ===== */
+.search-input {
+  margin-top: 10px;
+}
+
+/* ===== DASHBOARD ===== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 15px;
+}
+
+.dash-card {
   background: white;
   padding: 15px;
   border-radius: 10px;
+  text-align: center;
 }
 
-.cart-item {
+.card-icon {
+  font-size: 24px;
+}
+
+.dashboard-row {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  gap: 15px;
 }
 
-.cart-total {
-  font-weight: bold;
-  margin-top: 10px;
+.dashboard-row .panel {
+  flex: 1;
 }
 
-/* ===== DISCOUNT INPUT ===== */
-.discount-box {
-  margin-top: 10px;
-}
-
-.discount-box input {
-  width: 100%;
-  padding: 6px;
-  margin-top: 5px;
-}
-
-/* ===== CALCULATOR (FLOATING) ===== */
-.calculator-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #273c75;
-  color: white;
-  border: none;
-  padding: 12px 15px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.calculator {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 220px;
-  background: #2f3640;
-  padding: 10px;
-  border-radius: 10px;
-  color: white;
-}
-
-.calculator input {
-  width: 100%;
-  height: 40px;
-  margin-bottom: 10px;
-  text-align: right;
-  padding: 5px;
-  font-size: 18px;
-  border: none;
-}
-
-.calculator-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-.calculator-buttons button {
-  padding: 10px;
-  border: none;
-  background: #40739e;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.calculator-buttons button:hover {
-  background: #487eb0;
-}
-
-/* ===== LOW STOCK BADGE ===== */
+/* ===== LOW STOCK ===== */
 .low-stock {
   color: red;
-  font-size: 12px;
+  font-weight: bold;
 }
 
-/* ===== PRINT (XP-58II RECEIPT) ===== */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .print-area, .print-area * {
-    visibility: visible;
-  }
-
-  .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 58mm;
-    font-size: 12px;
-  }
-
-  .receipt {
-    width: 100%;
-    font-family: monospace;
-  }
-
-  .receipt h2 {
-    text-align: center;
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-
-  .receipt p {
-    margin: 2px 0;
-  }
-
-  .receipt hr {
-    border-top: 1px dashed black;
-    margin: 5px 0;
-  }
-
-  .receipt-row {
-    display: flex;
-    justify-content: space-between;
-  }
+/* ===== PRODUCT PAGE ===== */
+.product-layout {
+  display: flex;
+  gap: 20px;
 }
-/* ===== SALES FIXES ONLY ===== */
+
+.product-form-card,
+.product-preview-card {
+  flex: 1;
+}
+
+.preview-box {
+  text-align: center;
+}
+
+.preview-box img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.preview-placeholder {
+  font-size: 50px;
+}
+
+.preview-price {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ===== SALES PAGE ===== */
 
 .sales-container {
   display: flex;
@@ -259,152 +181,130 @@ body {
   padding: 20px;
 }
 
+/* PRODUCTS GRID */
 .products-grid {
+  flex: 2;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+  gap: 12px;
 }
 
 .product-card {
-  background: #ecf0f1;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.cart-section {
   background: white;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-/* ===== DISCOUNT ===== */
-.discount-box input {
-  width: 100%;
-  padding: 6px;
-}
-
-/* ===== CALCULATOR ===== */
-.calculator-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #273c75;
-  color: white;
-  border: none;
   padding: 12px;
-  border-radius: 50%;
-}
-
-.calculator {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 220px;
-  background: #2f3640;
-  padding: 10px;
   border-radius: 10px;
-  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: center;
+  border: 1px solid #eee;
 }
 
-/* ===== PRINT FIX ===== */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .print-area, .print-area * {
-    visibility: visible;
-  }
-
-  .print-area {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 58mm;
-    font-size: 12px;
-    font-family: monospace;
-  }
+.product-card:hover {
+  transform: scale(1.05);
+  background: #f1f2ff;
 }
 
-.sales-page {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-}
-
-.sales-left {
-  flex: 2;
-}
-
-.sales-right {
+/* CART */
+.cart-panel {
   flex: 1;
   background: white;
   padding: 15px;
   border-radius: 10px;
+  height: fit-content;
+  position: sticky;
+  top: 10px;
 }
 
-/* SEARCH */
-.search-bar {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-}
-
-/* PRODUCTS */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-}
-
-.product-card {
-  background: #6c2bd9;
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-}
-
-/* CART */
 .cart-item {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+}
+
+.divider {
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
+.discount input {
+  width: 100%;
+  margin-top: 5px;
 }
 
 /* BUTTONS */
 .checkout-btn {
   width: 100%;
   margin-top: 10px;
-  padding: 10px;
-  background: #6c2bd9;
-  color: white;
-  border: none;
+  background: #00b894;
 }
 
-.calc-btn {
+.calc-toggle {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  padding: 15px;
+  background: #fdcb6e;
+  color: black;
   border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 20px;
 }
 
-/* CALCULATOR */
-.calculator {
+/* ===== CALCULATOR ===== */
+.calculator-float {
   position: fixed;
-  bottom: 80px;
+  bottom: 90px;
   right: 20px;
   width: 220px;
-  background: #222;
-  padding: 10px;
+  background: white;
+  padding: 12px;
   border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.calculator-float input {
+  width: 100%;
+  margin-bottom: 10px;
+  text-align: right;
 }
 
 .calc-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4,1fr);
   gap: 5px;
+}
+
+.calc-grid button {
+  padding: 10px;
+}
+
+/* ===== LOGIN ===== */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .sales-container {
+    flex-direction: column;
+  }
+
+  .dashboard-row {
+    flex-direction: column;
+  }
+
+  .product-layout {
+    flex-direction: column;
+  }
 }
