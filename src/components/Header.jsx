@@ -1,9 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 
+
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  async function handleLogout() {
+  await supabase.auth.signOut();
+  window.location.reload();
+}
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -30,6 +36,7 @@ function Header() {
       </div>
 
       <div className="header-actions">
+        
         <button
           className="logout-btn"
           onClick={handleLogout}
