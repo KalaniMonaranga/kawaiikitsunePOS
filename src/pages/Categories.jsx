@@ -26,52 +26,41 @@ function Categories() {
   }
 
   async function saveCategory() {
-  if (!categoryName.trim()) {
-    alert("Please enter category name");
-    return;
-  }
-
-  const nameToSave = categoryName.trim();
-
-  if (editId) {
-    const { error } = await supabase
-      .from("categories")
-      .update({ name: nameToSave })
-      .eq("id", editId);
-
-    if (error) {
-      console.error("Update error:", error);
-      alert(error.message);
+    if (!categoryName.trim()) {
+      alert("Please enter category name");
       return;
     }
 
-    setEditId(null);
-  } else {
-    const { data, error } = await supabase
-  .from("categories")
-  .insert([
-    {
-      name: nameToSave,
-      description: "",
-    },
-  ])
-  .select()
-  .single();
+    if (editId) {
+      const { error } = await supabase
+        .from("categories")
+        .update({ name: categoryName })
+        .eq("id", editId);
 
-if (error) {
-  console.error("Insert error:", error);
-  alert(error.message);
-  return;
-}
+      if (error) {
+        alert(error.message);
+        return;
+      }
 
-setCategories((prev) => [...prev, data]);
+      setEditId(null);
+    } else {
+      const { data, error } = await supabase
+        .from("categories")
+        .insert([{ name: categoryName, description: "" }])
+        .select()
+        .single();
 
-    console.log("Inserted category:", data);
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      setCategories((prev) => [...prev, data]);
+    }
+
+    setCategoryName("");
+    await fetchCategories();
   }
-
-  setCategoryName("");
-  await fetchCategories();
-}
 
   function editCategory(category) {
     setEditId(category.id);
