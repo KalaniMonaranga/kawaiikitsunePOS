@@ -143,18 +143,28 @@ function Reports() {
 
     const { data: sale, error: saleError } = await supabase
       .from("sales")
-      .select("*, sale_items(*)")
+      .select("*")
       .eq("id", saleId)
       .single();
 
     if (saleError || !sale) {
+      console.error("Sale lookup failed:", saleError);
       alert("Bill not found.");
       return;
     }
 
-    const saleItems = sale.sale_items || [];
+    const { data: saleItems, error: itemsError } = await supabase
+      .from("sale_items")
+      .select("*")
+      .eq("sale_id", saleId);
 
-    for (const item of saleItems) {
+    if (itemsError) {
+      console.error("Sale items lookup failed:", itemsError);
+      alert("Unable to load sale items.");
+      return;
+    }
+
+    for (const item of saleItems || []) {
       const { data: productData, error: productError } = await supabase
         .from("products")
         .select("quantity")
