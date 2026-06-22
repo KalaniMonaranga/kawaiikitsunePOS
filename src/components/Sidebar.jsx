@@ -1,6 +1,7 @@
 import logo from "../assets/logo.png";
 import { NavLink } from "react-router-dom";
 
+
 function Sidebar() {
   const menuItems = [
     
@@ -9,6 +10,7 @@ function Sidebar() {
   { name: "Products", path: "/products" },
   { name: "Categories", path: "/categories" },
   { name: "Customers", path: "/customers" },
+  { name: "Reports", path: "/reports" }
 ];
 
 
