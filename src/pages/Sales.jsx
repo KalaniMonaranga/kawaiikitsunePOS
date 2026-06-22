@@ -119,6 +119,7 @@ function Sales() {
   );
 
   async function completeSale() {
+    console.log(completedSale);
     if (cart.length === 0) {
       alert("Cart is empty");
       return;
@@ -221,7 +222,11 @@ setCart([]);
 function printReceipt() {
   if (!completedSale) return;
 
-  const win = window.open("", "_blank");
+  const win = window.open("", "ReceiptWindow");
+  if (!win) {
+    alert("Unable to open print window. Please allow popups for this site.");
+    return;
+  }
 
   const html = `
   <html>
@@ -230,22 +235,23 @@ function printReceipt() {
       <style>
         body {
           width: 220px;
-          font-family: Arial;
+          font-family: Arial, sans-serif;
           font-size: 12px;
           padding: 10px;
+          margin: 0;
         }
         .center { text-align: center; }
         .line { border-top: 1px dashed #000; margin: 6px 0; }
-        table { width: 100%; font-size: 11px; }
-        td { padding: 2px 0; }
+        table { width: 100%; font-size: 11px; border-collapse: collapse; }
+        td { padding: 2px 0; vertical-align: top; }
         .right { text-align: right; }
       </style>
     </head>
 
     <body>
       <div class="center">
-        <h3>KAWAII KITSUNE</h3>
-        <p>Anime Store</p>
+        <h3 style="margin: 0;">KAWAII KITSUNE</h3>
+        <p style="margin: 4px 0 0;">Anime Store</p>
       </div>
 
       <div class="line"></div>
@@ -265,7 +271,7 @@ function printReceipt() {
               </tr>
               <tr>
                 <td>${item.cartQty} x ${item.selling_price}</td>
-                <td class="right">${item.cartQty * item.selling_price}</td>
+                <td class="right">Rs.${(item.cartQty * item.selling_price).toFixed(2)}</td>
               </tr>
             `
           )
@@ -281,15 +287,6 @@ function printReceipt() {
       <div class="line"></div>
 
       <div class="center">Thank you 💜</div>
-
-      <script>
-        window.onload = () => {
-          setTimeout(() => {
-            window.print();
-          }, 300);
-        };
-      </script>
-
     </body>
   </html>
   `;
@@ -297,6 +294,10 @@ function printReceipt() {
   win.document.open();
   win.document.write(html);
   win.document.close();
+  win.focus();
+  setTimeout(() => {
+    win.print();
+  }, 250);
 }
 
   const filteredProducts = products.filter((product) =>
