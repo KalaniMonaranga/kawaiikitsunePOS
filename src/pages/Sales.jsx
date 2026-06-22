@@ -222,15 +222,16 @@ setCart([]);
 function printReceipt() {
   if (!completedSale) return;
 
-  const win = window.open("", "ReceiptWindow");
+  const win = window.open("", "_blank", "noopener,noreferrer");
   if (!win) {
     alert("Unable to open print window. Please allow popups for this site.");
     return;
   }
 
-  const html = `
+  const html = `<!DOCTYPE html>
   <html>
     <head>
+      <meta charset="UTF-8" />
       <title>Receipt</title>
       <style>
         body {
@@ -246,6 +247,14 @@ function printReceipt() {
         td { padding: 2px 0; vertical-align: top; }
         .right { text-align: right; }
       </style>
+      <script>
+        window.onload = () => {
+          setTimeout(() => {
+            window.focus();
+            window.print();
+          }, 200);
+        };
+      </script>
     </head>
 
     <body>
@@ -288,16 +297,12 @@ function printReceipt() {
 
       <div class="center">Thank you 💜</div>
     </body>
-  </html>
-  `;
+  </html>`;
 
   win.document.open();
   win.document.write(html);
   win.document.close();
   win.focus();
-  setTimeout(() => {
-    win.print();
-  }, 250);
 }
 
   const filteredProducts = products.filter((product) =>
@@ -434,11 +439,7 @@ function printReceipt() {
       <p>Bill No: {completedSale.billNo}</p>
       <p>Total: Rs. {completedSale.total.toFixed(2)}</p>
 
-      <button
-        onClick={() =>
-          printReceipt(completedSale.billNo, completedSale.customerName)
-        }
-      >
+      <button onClick={printReceipt}>
         🖨 Print Receipt
       </button>
 
