@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
-import logo from "../assets/logo.png";
 import jsPDF from "jspdf";
 
 function Sales() {
@@ -70,7 +69,9 @@ function Sales() {
     if (e.key !== "Enter") return;
 
     const product = products.find(
-      (p) => p.barcode && p.barcode.toLowerCase() === barcode.toLowerCase()
+      (p) =>
+        p.barcode &&
+        p.barcode.toLowerCase() === barcode.toLowerCase()
     );
 
     if (!product) {
@@ -119,7 +120,6 @@ function Sales() {
   );
 
   async function completeSale() {
-    console.log(completedSale);
     if (cart.length === 0) {
       alert("Cart is empty");
       return;
@@ -144,7 +144,7 @@ function Sales() {
           bill_no: billNo,
           customer_id: customerId || null,
           customer_name: finalCustomerName,
-          subtotal: subtotal,
+          subtotal,
           discount: 0,
           total_amount: total,
           paid_amount: paid,
@@ -170,14 +170,7 @@ function Sales() {
       subtotal: Number(item.selling_price) * item.cartQty,
     }));
 
-    const { error: itemError } = await supabase
-      .from("sale_items")
-      .insert(saleItems);
-
-    if (itemError) {
-      alert(itemError.message);
-      return;
-    }
+    await supabase.from("sale_items").insert(saleItems);
 
     for (const item of cart) {
       const newQty = Number(item.quantity) - item.cartQty;
@@ -189,7 +182,8 @@ function Sales() {
     }
 
     if (customerId) {
-      const currentPoints = Number(selectedCustomer?.loyalty_points || 0);
+      const currentPoints =
+        Number(selectedCustomer?.loyalty_points || 0);
 
       await supabase
         .from("customers")
@@ -211,250 +205,196 @@ function Sales() {
 
     setCompletedSale(receiptData);
     setShowReceiptOptions(true);
-    printReceipt(receiptData);
 
     setCart([]);
     setPaidAmount("");
     setCustomerId("");
     setCustomerName("");
+
     fetchProducts();
     fetchCustomers();
   }
 
-function printReceipt(receipt = completedSale) {
-  if (!completedSale) return;
+  function printReceipt(receipt) {
+    if (!receipt) return;
 
-  const win = window.open("", "ReceiptWindow");
-  if (!win) {
-    alert("Unable to open print window. Please allow popups for this site.");
-    return;
+    const win = window.open("", "_blank");
+
+    const html = `
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>
+            body { font-family: Arial; font-size: 12px; padding: 10px; }
+            .center { text-align: center; }
+            .line { border-top: 1px dashed #000; margin: 6px 0; }
+            table { width: 100%; font-size: 11px; }
+            td { padding: 2px 0; }
+            .right { text-align: right; }
+          </style>
+        </head>
+
+        <body>
+          <div class="center">
+            <h3>KAWAII KITSUNE</h3>
+            <p>Anime Store</p>
+          </div>
+
+          <div class="line"></div>
+
+          <div>Bill: ${receipt.billNo}</div>
+          <div>Customer: ${receipt.customerName}</div>
+          <div>Date: ${receipt.date}</div>
+
+          <div class="line"></div>
+
+          <table>
+            ${receipt.cart
+              .map(
+                (item) => `
+                <tr><td colspan="2">${item.name}</td></tr>
+                <tr>
+                  <td>${item.cartQty} x Rs.${item.selling_price}</td>
+                  <td class="right">Rs.${item.cartQty * item.selling_price}</td>
+                </tr>
+              `
+              )
+              .join("")}
+          </table>
+
+          <div class="line"></div>
+
+          <div>Total: Rs.${receipt.total.toFixed(2)}</div>
+          <div>Paid: Rs.${receipt.paid.toFixed(2)}</div>
+          <div>Change: Rs.${receipt.change.toFixed(2)}</div>
+
+          <div class="line"></div>
+
+          <div class="center">Thank you 💜</div>
+
+          <script>
+            window.onload = () => window.print();
+          </script>
+        </body>
+      </html>
+    `;
+
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
   }
-
-  const html = `<!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset="UTF-8" />
-      <title>Receipt</title>
-      <style>
-        body {
-          width: 220px;
-          font-family: Arial, sans-serif;
-          font-size: 12px;
-          padding: 10px;
-          margin: 0;
-        }
-        .center { text-align: center; }
-        .line { border-top: 1px dashed #000; margin: 6px 0; }
-        table { width: 100%; font-size: 11px; border-collapse: collapse; }
-        td { padding: 2px 0; vertical-align: top; }
-        .right { text-align: right; }
-      </style>
-    </head>
-
-    <body>
-      <div class="center">
-        <h3 style="margin: 0;">KAWAII KITSUNE</h3>
-        <p style="margin: 4px 0 0;">Anime Store</p>
-      </div>
-
-      <div class="line"></div>
-
-      <div>Bill: ${receipt.billNo}</div>
-      <div>Customer: ${receipt.customerName}</div>
-      <div>Date: ${receipt.date}</div>
-
-      <div class="line"></div>
-
-      <table>
-        ${receipt.cart
-          .map(
-            (item) => `
-              <tr>
-                <td colspan="2">${item.name}</td>
-              </tr>
-              <tr>
-                <td>${item.cartQty} x ${item.selling_price}</td>
-                <td class="right">Rs.${(item.cartQty * item.selling_price).toFixed(2)}</td>
-              </tr>
-            `
-          )
-          .join("")}
-      </table>
-
-      <div class="line"></div>
-
-      <div>Total: Rs.${receipt.total.toFixed(2)}</div>
-      <div>Paid: Rs.${receipt.paid.toFixed(2)}</div>
-      <div>Change: Rs.${receipt.change.toFixed(2)}</div>
-
-      <div class="line"></div>
-
-      <div class="center">Thank you 💜</div>
-    </body>
-  </html>`;
-
-  win.document.open();
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  win.print();
-}
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="sales-page">
-      <div className="page-top">
-        <div>
-          <h2>Sales / Billing</h2>
-          <p>Create bills, scan items and print receipts.</p>
-        </div>
-      </div>
-
-      <div className="sales-layout">
-        <div className="sales-products">
-          <div className="sales-search-row">
-            <input
-              placeholder="Search product..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            <input
-              placeholder="Scan barcode..."
-              value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
-              onKeyDown={handleBarcodeEnter}
-            />
-          </div>
-
-          <div className="product-sale-grid">
-            {filteredProducts.map((product) => (
-              <div
-                className="sale-product-card"
-                key={product.id}
-                onClick={() => addToCart(product)}
-              >
-                {product.image_url ? (
-                  <img src={product.image_url} alt={product.name} />
-                ) : (
-                  <div className="sale-placeholder">🦊</div>
-                )}
-
-                <h4>{product.name}</h4>
-                <p>Rs. {product.selling_price}</p>
-                <span>Stock: {product.quantity}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="cart-panel">
-          <h3>Current Bill</h3>
-
-          <select
-            value={customerId}
-            onChange={(e) => setCustomerId(e.target.value)}
-          >
-            <option value="">Customer</option>
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.name}
-              </option>
-            ))}
-          </select>
-
+    <div className="sales-layout">
+      <div className="sales-products">
+        <div className="sales-search-row">
           <input
-            placeholder="Customer name optional"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
+            placeholder="Search product..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
 
-          <div className="cart-items">
-            {cart.length === 0 ? (
-              <p className="empty-cart">No items added.</p>
-            ) : (
-              cart.map((item) => (
-                <div className="cart-item" key={item.id}>
-                  <div>
-                    <strong>{item.name}</strong>
-                    <p>Rs. {item.selling_price}</p>
-                  </div>
+          <input
+            placeholder="Scan barcode..."
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            onKeyDown={handleBarcodeEnter}
+          />
+        </div>
 
-                  <input
-                    type="number"
-                    value={item.cartQty}
-                    onChange={(e) => updateQty(item.id, e.target.value)}
-                  />
-
-                  <button onClick={() => removeItem(item.id)}>×</button>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="bill-summary">
-            <div>
-              <span>Total</span>
-              <strong>Rs. {total.toFixed(2)}</strong>
-            </div>
-
-            <input
-              type="number"
-              placeholder="Customer paid amount"
-              value={paidAmount}
-              onChange={(e) => setPaidAmount(e.target.value)}
-            />
-
-            <div>
-              <span>Change</span>
-              <strong>Rs. {change > 0 ? change.toFixed(2) : "0.00"}</strong>
-            </div>
-
-            <select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
+        <div className="product-sale-grid">
+          {filteredProducts.map((product) => (
+            <div
+              className="sale-product-card"
+              key={product.id}
+              onClick={() => addToCart(product)}
             >
-              <option>Cash</option>
-              <option>Card</option>
-              <option>Bank Transfer</option>
-              <option>QR</option>
-            </select>
-
-            <button onClick={completeSale}>Complete Sale & Print</button>
-          </div>
+              <h4>{product.name}</h4>
+              <p>Rs. {product.selling_price}</p>
+              <span>Stock: {product.quantity}</span>
+            </div>
+          ))}
         </div>
       </div>
-      {showReceiptOptions && completedSale && (
-  <div className="receipt-modal">
-    <div className="receipt-box">
-      <h2>Sale Completed!</h2>
-      <p>Bill No: {completedSale.billNo}</p>
-      <p>Total: Rs. {completedSale.total.toFixed(2)}</p>
 
-      <button onClick={printReceipt}>
-        🖨 Print Receipt
-      </button>
+      <div className="cart-panel">
+        <h3>Current Bill</h3>
 
-      <button onClick={downloadPDF}>
-        📄 Download PDF
-      </button>
+        <select
+          value={customerId}
+          onChange={(e) => setCustomerId(e.target.value)}
+        >
+          <option value="">Customer</option>
+          {customers.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
 
-      <button onClick={() => alert("Email system will be added after Vercel setup")}>
-        📧 Email Receipt
-      </button>
+        <input
+          placeholder="Customer name optional"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+        />
 
-      <button
-        className="btn-light"
-        onClick={() => setShowReceiptOptions(false)}
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
+        <div>
+          {cart.map((item) => (
+            <div key={item.id}>
+              {item.name}
+              <input
+                type="number"
+                value={item.cartQty}
+                onChange={(e) =>
+                  updateQty(item.id, e.target.value)
+                }
+              />
+              <button onClick={() => removeItem(item.id)}>×</button>
+            </div>
+          ))}
+        </div>
+
+        <div>
+          <strong>Total: Rs. {total.toFixed(2)}</strong>
+        </div>
+
+        <input
+          type="number"
+          placeholder="Paid amount"
+          value={paidAmount}
+          onChange={(e) => setPaidAmount(e.target.value)}
+        />
+
+        <div>
+          Change: Rs. {change > 0 ? change.toFixed(2) : "0.00"}
+        </div>
+
+        <select
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+        >
+          <option>Cash</option>
+          <option>Card</option>
+          <option>Bank Transfer</option>
+          <option>QR</option>
+        </select>
+
+        <button onClick={completeSale}>
+          Complete Sale & Print
+        </button>
+
+        {showReceiptOptions && completedSale && (
+          <div>
+            <button onClick={() => printReceipt(completedSale)}>
+              🖨 Print Receipt
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
