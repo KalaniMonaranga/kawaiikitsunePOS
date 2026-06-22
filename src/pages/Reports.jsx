@@ -141,10 +141,16 @@ function Reports() {
       return;
     }
 
+    const deleteId = Number(saleId);
+    if (Number.isNaN(deleteId)) {
+      alert("Invalid bill identifier.");
+      return;
+    }
+
     const { data: sale, error: saleError } = await supabase
       .from("sales")
       .select("*")
-      .eq("id", saleId)
+      .eq("id", deleteId)
       .single();
 
     if (saleError || !sale) {
@@ -156,7 +162,7 @@ function Reports() {
     const { data: saleItems, error: itemsError } = await supabase
       .from("sale_items")
       .select("*")
-      .eq("sale_id", saleId);
+      .eq("sale_id", deleteId);
 
     if (itemsError) {
       console.error("Sale items lookup failed:", itemsError);
@@ -203,7 +209,7 @@ function Reports() {
     const { error: deleteItemsError } = await supabase
       .from("sale_items")
       .delete()
-      .eq("sale_id", saleId);
+      .eq("sale_id", deleteId);
 
     if (deleteItemsError) {
       alert(deleteItemsError.message);
@@ -213,7 +219,7 @@ function Reports() {
     const { error: deleteSaleError } = await supabase
       .from("sales")
       .delete()
-      .eq("id", saleId);
+      .eq("id", deleteId);
 
     if (deleteSaleError) {
       alert(deleteSaleError.message);
