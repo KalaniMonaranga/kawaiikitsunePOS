@@ -308,3 +308,67 @@ th {
     flex-direction: column;
   }
 }
+.categories-container {
+  padding: 20px;
+  background: #f7f7ff;
+}
+
+.categories-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.categories-table th {
+  background: #6d28d9;
+  color: white;
+  padding: 12px;
+  text-align: left;
+}
+
+.categories-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.categories-table tr:hover {
+  background: #f3f4f6;
+}
+button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.edit-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #6d28d9;
+}
+.categories-container {
+  max-width: 1200px;
+  margin: auto;
+}
