@@ -8,8 +8,13 @@
 /* ===== BODY ===== */
 body {
   font-family: Arial, sans-serif;
-  background: #f5f6fa;
-  color: #333;
+  background: #f5f6fa !important;
+  color: #333 !important;
+}
+
+:root {
+  --app-bg: #f5f6fa;
+  --app-text: #333;
 }
 
 /* ===== HEADER ===== */

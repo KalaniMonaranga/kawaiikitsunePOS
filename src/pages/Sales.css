@@ -7,6 +7,12 @@
   align-items: start;
 }
 
+/* ensure default text and background for sales page */
+.sales-page, .sales-left, .sales-right {
+  background: transparent;
+  color: var(--app-text, #222);
+}
+
 .sales-left {
   display: flex;
   flex-direction: column;
