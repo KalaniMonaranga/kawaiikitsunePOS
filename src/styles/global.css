@@ -211,3 +211,78 @@ body {
     justify-content: space-between;
   }
 }
+/* ===== SALES FIXES ONLY ===== */
+
+.sales-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.product-card {
+  background: #ecf0f1;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cart-section {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* ===== DISCOUNT ===== */
+.discount-box input {
+  width: 100%;
+  padding: 6px;
+}
+
+/* ===== CALCULATOR ===== */
+.calculator-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #273c75;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+}
+
+.calculator {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 220px;
+  background: #2f3640;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+}
+
+/* ===== PRINT FIX ===== */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 58mm;
+    font-size: 12px;
+    font-family: monospace;
+  }
+}
