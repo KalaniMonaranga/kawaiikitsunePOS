@@ -22,10 +22,11 @@
 .search-bar {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(0,0,0,0.06);
   border-radius: 8px;
-  background: white;
+  background: var(--white);
   font-size: 14px;
+  color: var(--black);
 }
 
 .products-grid {
@@ -35,8 +36,8 @@
 }
 
 .product-card {
-  background: linear-gradient(180deg,#7b4be8,#6c2bd9);
-  color: white;
+  background: linear-gradient(180deg,var(--purple-500),var(--purple-600));
+  color: var(--white);
   padding: 12px;
   border-radius: 10px;
   cursor: pointer;
@@ -62,10 +63,10 @@
 }
 
 .sales-right {
-  background: white;
+  background: var(--white);
   padding: 14px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(15,15,15,0.03);
+  box-shadow: 0 6px 20px rgba(16,12,24,0.06);
   max-height: calc(100vh - 120px);
   overflow: auto;
 }
@@ -97,7 +98,7 @@
   width: 100%;
   padding: 8px;
   border-radius: 6px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid rgba(0,0,0,0.06);
 }
 
 .cart-summary {
@@ -119,8 +120,8 @@
   width: 100%;
   margin-top: 12px;
   padding: 10px 12px;
-  background: linear-gradient(90deg,#6c2bd9,#8a5cf3);
-  color: white;
+  background: linear-gradient(90deg,var(--purple-600),var(--purple-500));
+  color: var(--white);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -133,8 +134,8 @@
   position: fixed;
   bottom: 22px;
   right: 22px;
-  background: #ffb86b;
-  color: #222;
+  background: var(--black);
+  color: var(--white);
   border: none;
   padding: 12px 14px;
   border-radius: 50%;
