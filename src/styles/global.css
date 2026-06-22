@@ -7,9 +7,10 @@
 
 /* ===== BODY ===== */
 body {
-  font-family: Arial, sans-serif;
-  background: #fbf6ff !important;
-  color: #111114 !important;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg-very-light) !important;
+  color: var(--black) !important;
+  -webkit-font-smoothing:antialiased;
 }
 
 /* POS color palette variables */
@@ -27,9 +28,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(90deg,var(--purple-600),var(--purple-500));
+  background: var(--purple-500);
   color: var(--white);
-  padding: 15px 20px;
+  padding: 14px 20px;
+  box-shadow: 0 2px 6px rgba(16,12,24,0.06);
 }
 
 .header h1 {
@@ -68,13 +70,14 @@ body {
   padding: 18px 14px;
 }
 
-.logo-box img { width: 64px; height: 64px; object-fit: contain; }
-.logo-box h2 { margin-top: 6px; font-size: 18px; }
-.logo-box p { font-size: 12px; color: #666; }
+.logo-box img { width: 56px; height: 56px; object-fit: contain; display:block; }
+.logo-box h2 { margin-top: 8px; font-size: 16px; color:var(--black); }
+.logo-box p { font-size: 12px; color: #777; margin-top:2px }
 
 .menu { margin-top: 18px; display:flex; flex-direction:column; gap:6px; }
-.menu-item { color: var(--black); text-decoration: none; padding: 8px 10px; border-radius:6px; }
-.menu-item.active { background: linear-gradient(90deg,var(--purple-600),var(--purple-500)); color:var(--white); font-weight:700; }
+.menu-item { color: var(--black); text-decoration: none; padding: 10px 12px; border-radius:8px; display:block; }
+.menu-item:hover { background: rgba(108,43,217,0.06); }
+.menu-item.active { background: transparent; color:var(--purple-600); font-weight:700; border-left: 4px solid var(--purple-500); padding-left:8px; }
 
 .main-area { flex: 1; display:flex; flex-direction:column; min-height:100vh; }
 .page-content { padding: 18px; flex:1; }
