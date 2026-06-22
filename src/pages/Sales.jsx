@@ -218,187 +218,118 @@ setCart([]);
     fetchCustomers();
   }
 
-  function printReceipt(billNo, finalCustomerName) {
-    const receiptWindow = window.open("", "_blank");
-    function downloadPDF() {
-  if (!completedSale) return;
+  function printReceipt() {
+  const receiptWindow = window.open("", "_blank");
 
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: [58, 120],
-  });
+  receiptWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          body {
+            width: 190px;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            margin: 0;
+            padding: 5px;
+            color: #000;
+          }
 
-  doc.setFontSize(11);
-  doc.text("KAWAII KITSUNE", 29, 10, { align: "center" });
+          .center { text-align: center; }
 
-  doc.setFontSize(8);
-  doc.text("Anime • Manga • Collectibles", 29, 15, { align: "center" });
-
-  doc.line(3, 19, 55, 19);
-
-  doc.setFontSize(7);
-  doc.text(`Bill No: ${completedSale.billNo}`, 4, 24);
-  doc.text(`Cashier: Kalani`, 4, 28);
-  doc.text(`Customer: ${completedSale.customerName}`, 4, 32);
-  doc.text(`Date: ${completedSale.date}`, 4, 36);
-
-  doc.line(3, 40, 55, 40);
-
-  let y = 45;
-
-  completedSale.cart.forEach((item) => {
-    doc.text(item.name, 4, y);
-    y += 4;
-    doc.text(
-      `${item.cartQty} x Rs.${item.selling_price}`,
-      4,
-      y
-    );
-    doc.text(
-      `Rs.${Number(item.selling_price) * item.cartQty}`,
-      55,
-      y,
-      { align: "right" }
-    );
-    y += 6;
-  });
-
-  doc.line(3, y, 55, y);
-  y += 5;
-
-  doc.setFontSize(8);
-  doc.text("Total", 4, y);
-  doc.text(`Rs.${completedSale.total.toFixed(2)}`, 55, y, { align: "right" });
-
-  y += 5;
-  doc.text("Paid", 4, y);
-  doc.text(`Rs.${completedSale.paid.toFixed(2)}`, 55, y, { align: "right" });
-
-  y += 5;
-  doc.text("Change", 4, y);
-  doc.text(`Rs.${completedSale.change.toFixed(2)}`, 55, y, { align: "right" });
-
-  y += 10;
-  doc.text("Thank you!", 29, y, { align: "center" });
-  y += 4;
-  doc.text("Come again!", 29, y, { align: "center" });
-
-  doc.save(`Bill-${completedSale.billNo}.pdf`);
-}
-    receiptWindow.document.write(`
-      <html>
-        <head>
-          <title>Receipt</title>
-          <style>
-            body {
-              width: 190px;
-              font-family: Arial, sans-serif;
-              font-size: 11px;
-              margin: 0;
-              padding: 5px;
-              color: #000;
-            }
-
-            .center {
-              text-align: center;
-            }
-
-            .logo {
+          .logo {
             width: 90px;
             height: 90px;
+          }
 
-            .line {
-              border-top: 1px dashed #000;
-              margin: 6px 0;
-            }
+          .line {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+          }
 
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              font-size: 10px;
-            }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+          }
 
-            td {
-              padding: 2px 0;
-              vertical-align: top;
-            }
+          td {
+            padding: 2px 0;
+            vertical-align: top;
+          }
 
-            .right {
-              text-align: right;
-            }
+          .right { text-align: right; }
+          .bold { font-weight: bold; }
+        </style>
+      </head>
 
-            .bold {
-              font-weight: bold;
-            }
-          </style>
-        </head>
+      <body>
+        <div class="center">
+          <div class="bold">KAWAII KITSUNE</div>
+          <div>Anime • Manga • Collectibles</div>
+        </div>
 
-        <body>
-          <div class="center">
-            <img src="${logo}" class="logo" />
-            <div class="bold">KAWAII KITSUNE</div>
-            <div>Anime • Manga • Collectibles</div>
-          </div>
+        <div class="line"></div>
 
-          <div class="line"></div>
+        <div>Bill No: ${completedSale.billNo}</div>
+        <div>Customer: ${completedSale.customerName}</div>
+        <div>Date: ${completedSale.date}</div>
 
-          <div>Bill No: ${billNo}</div>
-          <div>Customer: ${finalCustomerName}</div>
-          <div>Date: ${new Date().toLocaleString()}</div>
+        <div class="line"></div>
 
-          <div class="line"></div>
+        <table>
+          ${completedSale.cart
+            .map(
+              (item) => `
+              <tr><td colspan="2">${item.name}</td></tr>
+              <tr>
+                <td>${item.cartQty} x Rs.${item.selling_price}</td>
+                <td class="right">Rs.${item.cartQty * item.selling_price}</td>
+              </tr>
+            `
+            )
+            .join("")}
+        </table>
 
-          <table>
-            ${cart
-              .map(
-                (item) => `
-                <tr>
-                  <td colspan="2">${item.name}</td>
-                </tr>
-                <tr>
-                  <td>${item.cartQty} x Rs.${item.selling_price}</td>
-                  <td class="right">Rs.${Number(item.selling_price) * item.cartQty}</td>
-                </tr>
-              `
-              )
-              .join("")}
-          </table>
+        <div class="line"></div>
 
-          <div class="line"></div>
+        <table>
+          <tr>
+            <td class="bold">Total</td>
+            <td class="right">Rs.${completedSale.total.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Paid</td>
+            <td class="right">Rs.${completedSale.paid.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Change</td>
+            <td class="right">Rs.${completedSale.change.toFixed(2)}</td>
+          </tr>
+        </table>
 
-          <table>
-            <tr>
-              <td class="bold">Total</td>
-              <td class="right bold">Rs.${total.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td>Paid</td>
-              <td class="right">Rs.${paid.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td>Change</td>
-              <td class="right">Rs.${change.toFixed(2)}</td>
-            </tr>
-          </table>
+        <div class="line"></div>
 
-          <div class="line"></div>
+        <div class="center">
+          Thank you!<br/>
+          Come again 💜
+        </div>
 
-          <div class="center">
-            Thank you!<br/>
-            Come again 💜
-          </div>
+        <script>
+          window.onload = function () {
+            window.print();
+          };
+        </script>
+      </body>
+    </html>
+  `);
 
-          <script>
-            window.onload = function() {
-              window.print();
-            }
-          </script>
-        </body>
-      </html>
-    `);
+  receiptWindow.document.close();
 
-    receiptWindow.document.close();
+setTimeout(() => {
+  receiptWindow.print();
+}, 500);
+
   }
 
   const filteredProducts = products.filter((product) =>
