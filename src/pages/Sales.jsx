@@ -1,180 +1,567 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
-import "./Sales.css";
+import logo from "../assets/logo.png";
+import jsPDF from "jspdf";
 
 function Sales() {
   const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [cart, setCart] = useState([]);
-  const [discount, setDiscount] = useState(0);
-  const [showCalculator, setShowCalculator] = useState(false);
-  const [calc, setCalc] = useState("");
   const [search, setSearch] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [paidAmount, setPaidAmount] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [completedSale, setCompletedSale] = useState(null);
+  const [showReceiptOptions, setShowReceiptOptions] = useState(false);
 
   useEffect(() => {
     fetchProducts();
+    fetchCustomers();
   }, []);
 
   async function fetchProducts() {
-    const { data } = await supabase.from("products").select("*");
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .order("name", { ascending: true });
+
     setProducts(data || []);
   }
 
-  function addToCart(product) {
-    const exist = cart.find((i) => i.id === product.id);
+  async function fetchCustomers() {
+    const { data } = await supabase
+      .from("customers")
+      .select("*")
+      .order("name", { ascending: true });
 
-    if (exist) {
+    setCustomers(data || []);
+  }
+
+  function addToCart(product) {
+    if (product.quantity <= 0) {
+      alert("This product is out of stock");
+      return;
+    }
+
+    const existing = cart.find((item) => item.id === product.id);
+
+    if (existing) {
+      if (existing.cartQty + 1 > product.quantity) {
+        alert("Not enough stock");
+        return;
+      }
+
       setCart(
-        cart.map((i) =>
-          i.id === product.id ? { ...i, qty: i.qty + 1 } : i
+        cart.map((item) =>
+          item.id === product.id
+            ? { ...item, cartQty: item.cartQty + 1 }
+            : item
         )
       );
     } else {
-      setCart([...cart, { ...product, qty: 1 }]);
+      setCart([...cart, { ...product, cartQty: 1 }]);
     }
   }
-  
+
+  function handleBarcodeEnter(e) {
+    if (e.key !== "Enter") return;
+
+    const product = products.find(
+      (p) => p.barcode && p.barcode.toLowerCase() === barcode.toLowerCase()
+    );
+
+    if (!product) {
+      alert("Product not found");
+      return;
+    }
+
+    addToCart(product);
+    setBarcode("");
+  }
+
+  function updateQty(id, qty) {
+    const product = products.find((p) => p.id === id);
+    const newQty = Number(qty);
+
+    if (newQty < 1) return;
+
+    if (newQty > product.quantity) {
+      alert("Not enough stock");
+      return;
+    }
+
+    setCart(
+      cart.map((item) =>
+        item.id === id ? { ...item, cartQty: newQty } : item
+      )
+    );
+  }
+
+  function removeItem(id) {
+    setCart(cart.filter((item) => item.id !== id));
+  }
+
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.qty,
+    (sum, item) => sum + Number(item.selling_price) * item.cartQty,
     0
   );
 
-  const total = subtotal - discount;
+  const total = subtotal;
+  const paid = Number(paidAmount || 0);
+  const change = paid - total;
+  const loyaltyPoints = total * 0.02;
 
-  function handleCalc(val) {
-    if (val === "C") return setCalc("");
-    if (val === "=") {
-      try {
-        setCalc(eval(calc).toString());
-      } catch {
-        setCalc("Error");
-      }
+  const selectedCustomer = customers.find(
+    (customer) => String(customer.id) === String(customerId)
+  );
+
+  async function completeSale() {
+    if (cart.length === 0) {
+      alert("Cart is empty");
       return;
     }
-    setCalc(calc + val);
+
+    if (paid < total) {
+      alert("Paid amount is not enough");
+      return;
+    }
+
+    const billNo = String(Date.now()).slice(-5);
+
+    const finalCustomerName =
+      customerName.trim() ||
+      selectedCustomer?.name ||
+      "Customer";
+
+    const { data: saleData, error: saleError } = await supabase
+      .from("sales")
+      .insert([
+        {
+          bill_no: billNo,
+          customer_id: customerId || null,
+          customer_name: finalCustomerName,
+          subtotal: subtotal,
+          discount: 0,
+          total_amount: total,
+          paid_amount: paid,
+          change_amount: change,
+          payment_method: paymentMethod,
+          loyalty_points_earned: loyaltyPoints,
+        },
+      ])
+      .select()
+      .single();
+
+    if (saleError) {
+      alert(saleError.message);
+      return;
+    }
+
+    const saleItems = cart.map((item) => ({
+      sale_id: saleData.id,
+      product_id: item.id,
+      product_name: item.name,
+      quantity: item.cartQty,
+      unit_price: Number(item.selling_price),
+      subtotal: Number(item.selling_price) * item.cartQty,
+    }));
+
+    const { error: itemError } = await supabase
+      .from("sale_items")
+      .insert(saleItems);
+
+    if (itemError) {
+      alert(itemError.message);
+      return;
+    }
+
+    for (const item of cart) {
+      const newQty = Number(item.quantity) - item.cartQty;
+
+      await supabase
+        .from("products")
+        .update({ quantity: newQty })
+        .eq("id", item.id);
+    }
+
+    if (customerId) {
+      const currentPoints = Number(selectedCustomer?.loyalty_points || 0);
+
+      await supabase
+        .from("customers")
+        .update({
+          loyalty_points: currentPoints + loyaltyPoints,
+        })
+        .eq("id", customerId);
+    }
+
+    setCompletedSale({
+  billNo,
+  customerName: finalCustomerName,
+  cart: [...cart],
+  total,
+  paid,
+  change,
+  date: new Date().toLocaleString(),
+});
+
+setShowReceiptOptions(true);
+
+setCart([]);
+    setPaidAmount("");
+    setCustomerId("");
+    setCustomerName("");
+    fetchProducts();
+    fetchCustomers();
   }
 
-  function printReceipt() {
-    const w = window.open("", "", "width=300,height=600");
-    w.document.write(`
+  function printReceipt(billNo, finalCustomerName) {
+    const receiptWindow = window.open("", "_blank");
+    function downloadPDF() {
+  if (!completedSale) return;
+
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: [58, 120],
+  });
+
+  doc.setFontSize(11);
+  doc.text("KAWAII KITSUNE", 29, 10, { align: "center" });
+
+  doc.setFontSize(8);
+  doc.text("Anime • Manga • Collectibles", 29, 15, { align: "center" });
+
+  doc.line(3, 19, 55, 19);
+
+  doc.setFontSize(7);
+  doc.text(`Bill No: ${completedSale.billNo}`, 4, 24);
+  doc.text(`Cashier: Kalani`, 4, 28);
+  doc.text(`Customer: ${completedSale.customerName}`, 4, 32);
+  doc.text(`Date: ${completedSale.date}`, 4, 36);
+
+  doc.line(3, 40, 55, 40);
+
+  let y = 45;
+
+  completedSale.cart.forEach((item) => {
+    doc.text(item.name, 4, y);
+    y += 4;
+    doc.text(
+      `${item.cartQty} x Rs.${item.selling_price}`,
+      4,
+      y
+    );
+    doc.text(
+      `Rs.${Number(item.selling_price) * item.cartQty}`,
+      55,
+      y,
+      { align: "right" }
+    );
+    y += 6;
+  });
+
+  doc.line(3, y, 55, y);
+  y += 5;
+
+  doc.setFontSize(8);
+  doc.text("Total", 4, y);
+  doc.text(`Rs.${completedSale.total.toFixed(2)}`, 55, y, { align: "right" });
+
+  y += 5;
+  doc.text("Paid", 4, y);
+  doc.text(`Rs.${completedSale.paid.toFixed(2)}`, 55, y, { align: "right" });
+
+  y += 5;
+  doc.text("Change", 4, y);
+  doc.text(`Rs.${completedSale.change.toFixed(2)}`, 55, y, { align: "right" });
+
+  y += 10;
+  doc.text("Thank you!", 29, y, { align: "center" });
+  y += 4;
+  doc.text("Come again!", 29, y, { align: "center" });
+
+  doc.save(`Bill-${completedSale.billNo}.pdf`);
+}
+    receiptWindow.document.write(`
       <html>
-      <body style="font-family:monospace;width:58mm">
-        <h3 style="text-align:center">Kawaii Kitsune</h3>
-        <hr/>
-        ${cart
-          .map(
-            (i) => `
-            <div style="display:flex;justify-content:space-between">
-              <span>${i.name} x${i.qty}</span>
-              <span>${i.qty * i.price}</span>
-            </div>
-          `
-          )
-          .join("")}
-        <hr/>
-        <div style="display:flex;justify-content:space-between">
-          <b>Total</b><b>${total}</b>
-        </div>
-        <p style="text-align:center">Thank you 💜</p>
-      </body>
+        <head>
+          <title>Receipt</title>
+          <style>
+            body {
+              width: 190px;
+              font-family: Arial, sans-serif;
+              font-size: 11px;
+              margin: 0;
+              padding: 5px;
+              color: #000;
+            }
+
+            .center {
+              text-align: center;
+            }
+
+            .logo {
+            width: 90px;
+            height: 90px;
+
+            .line {
+              border-top: 1px dashed #000;
+              margin: 6px 0;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 10px;
+            }
+
+            td {
+              padding: 2px 0;
+              vertical-align: top;
+            }
+
+            .right {
+              text-align: right;
+            }
+
+            .bold {
+              font-weight: bold;
+            }
+          </style>
+        </head>
+
+        <body>
+          <div class="center">
+            <img src="${logo}" class="logo" />
+            <div class="bold">KAWAII KITSUNE</div>
+            <div>Anime • Manga • Collectibles</div>
+          </div>
+
+          <div class="line"></div>
+
+          <div>Bill No: ${billNo}</div>
+          <div>Customer: ${finalCustomerName}</div>
+          <div>Date: ${new Date().toLocaleString()}</div>
+
+          <div class="line"></div>
+
+          <table>
+            ${cart
+              .map(
+                (item) => `
+                <tr>
+                  <td colspan="2">${item.name}</td>
+                </tr>
+                <tr>
+                  <td>${item.cartQty} x Rs.${item.selling_price}</td>
+                  <td class="right">Rs.${Number(item.selling_price) * item.cartQty}</td>
+                </tr>
+              `
+              )
+              .join("")}
+          </table>
+
+          <div class="line"></div>
+
+          <table>
+            <tr>
+              <td class="bold">Total</td>
+              <td class="right bold">Rs.${total.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Paid</td>
+              <td class="right">Rs.${paid.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Change</td>
+              <td class="right">Rs.${change.toFixed(2)}</td>
+            </tr>
+          </table>
+
+          <div class="line"></div>
+
+          <div class="center">
+            Thank you!<br/>
+            Come again 💜
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
       </html>
     `);
-    w.document.close();
-    w.print();
+
+    receiptWindow.document.close();
   }
 
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-  <div className="sales-container">
-
-    {/* LEFT SIDE */}
-    <div className="sales-left">
-
-      {/* SEARCH */}
-      <input
-        type="text"
-        placeholder="Search product..."
-        className="search-bar"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      {/* PRODUCTS */}
-      <div className="products-grid">
-        {filteredProducts.map((p) => (
-          <div
-            key={p.id}
-            className="product-card"
-            onClick={() => addToCart(p)}
-          >
-            <h4>{p.name}</h4>
-            <p>Rs {p.price}</p>
-          </div>
-        ))}
-      </div>
-
-    </div>
-
-    {/* RIGHT SIDE CART */}
-    <div className="sales-right">
-
-      <h3>Cart</h3>
-
-      {cart.map((item) => (
-        <div key={item.id} className="cart-item">
-          <span>{item.name} x {item.qty}</span>
-          <span>{item.qty * item.price}</span>
+    <div className="sales-page">
+      <div className="page-top">
+        <div>
+          <h2>Sales / Billing</h2>
+          <p>Create bills, scan items and print receipts.</p>
         </div>
-      ))}
-
-      <hr />
-
-      <div>Subtotal: {subtotal}</div>
-
-      <div className="discount">
-        Discount:
-        <input
-          type="number"
-          value={discount}
-          onChange={(e) => setDiscount(Number(e.target.value))}
-        />
       </div>
 
-      <h2>Total: {total}</h2>
+      <div className="sales-layout">
+        <div className="sales-products">
+          <div className="sales-search-row">
+            <input
+              placeholder="Search product..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
 
-      <button className="checkout-btn" onClick={printReceipt}>
-        Print
+            <input
+              placeholder="Scan barcode..."
+              value={barcode}
+              onChange={(e) => setBarcode(e.target.value)}
+              onKeyDown={handleBarcodeEnter}
+            />
+          </div>
+
+          <div className="product-sale-grid">
+            {filteredProducts.map((product) => (
+              <div
+                className="sale-product-card"
+                key={product.id}
+                onClick={() => addToCart(product)}
+              >
+                {product.image_url ? (
+                  <img src={product.image_url} alt={product.name} />
+                ) : (
+                  <div className="sale-placeholder">🦊</div>
+                )}
+
+                <h4>{product.name}</h4>
+                <p>Rs. {product.selling_price}</p>
+                <span>Stock: {product.quantity}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="cart-panel">
+          <h3>Current Bill</h3>
+
+          <select
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+          >
+            <option value="">Customer</option>
+            {customers.map((customer) => (
+              <option key={customer.id} value={customer.id}>
+                {customer.name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            placeholder="Customer name optional"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+          />
+
+          <div className="cart-items">
+            {cart.length === 0 ? (
+              <p className="empty-cart">No items added.</p>
+            ) : (
+              cart.map((item) => (
+                <div className="cart-item" key={item.id}>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <p>Rs. {item.selling_price}</p>
+                  </div>
+
+                  <input
+                    type="number"
+                    value={item.cartQty}
+                    onChange={(e) => updateQty(item.id, e.target.value)}
+                  />
+
+                  <button onClick={() => removeItem(item.id)}>×</button>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="bill-summary">
+            <div>
+              <span>Total</span>
+              <strong>Rs. {total.toFixed(2)}</strong>
+            </div>
+
+            <input
+              type="number"
+              placeholder="Customer paid amount"
+              value={paidAmount}
+              onChange={(e) => setPaidAmount(e.target.value)}
+            />
+
+            <div>
+              <span>Change</span>
+              <strong>Rs. {change > 0 ? change.toFixed(2) : "0.00"}</strong>
+            </div>
+
+            <select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            >
+              <option>Cash</option>
+              <option>Card</option>
+              <option>Bank Transfer</option>
+              <option>QR</option>
+            </select>
+
+            <button onClick={completeSale}>Complete Sale & Print</button>
+          </div>
+        </div>
+      </div>
+      {showReceiptOptions && completedSale && (
+  <div className="receipt-modal">
+    <div className="receipt-box">
+      <h2>Sale Completed!</h2>
+      <p>Bill No: {completedSale.billNo}</p>
+      <p>Total: Rs. {completedSale.total.toFixed(2)}</p>
+
+      <button
+        onClick={() =>
+          printReceipt(completedSale.billNo, completedSale.customerName)
+        }
+      >
+        🖨 Print Receipt
+      </button>
+
+      <button onClick={downloadPDF}>
+        📄 Download PDF
+      </button>
+
+      <button onClick={() => alert("Email system will be added after Vercel setup")}>
+        📧 Email Receipt
       </button>
 
       <button
-        className="calc-btn"
-        onClick={() => setShowCalculator(!showCalculator)}
+        className="btn-light"
+        onClick={() => setShowReceiptOptions(false)}
       >
-        🧮
+        Close
       </button>
-
     </div>
-
-    {/* CALCULATOR */}
-    {showCalculator && (
-      <div className="calculator">
-        <input value={calc} readOnly />
-
-        <div className="calc-grid">
-          {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+","C"]
-            .map((b) => (
-              <button key={b} onClick={() => handleCalc(b)}>
-                {b}
-              </button>
-          ))}
-        </div>
-      </div>
-    )}
-
   </div>
-);
+)}
+    </div>
+  );
 }
 
 export default Sales;

@@ -34,7 +34,7 @@ function Products() {
   async function fetchProducts() {
     const { data } = await supabase
       .from("products")
-      .select("*")
+      .select("*, categories(name)")
       .order("id", { ascending: true });
 
     setProducts(data || []);
@@ -90,12 +90,16 @@ function Products() {
   }
 
   async function saveProduct() {
+    console.log("Save button clicked");
+    console.log("Form data:", form);
+    console.log("Image file:", imageFile);
     if (
       !form.name ||
       !form.category_id ||
       !form.cost_price ||
       !form.selling_price ||
       !form.quantity
+      
     ) {
       alert("Please fill required fields");
       return;
@@ -292,7 +296,7 @@ function Products() {
                         )}
                       </td>
                       <td>{product.name}</td>
-                      <td>{product.category_id}</td>
+                      <td>{product.categories?.name || "-"}</td>
                       <td>{product.barcode || "-"}</td>
                       <td>Rs. {product.cost_price}</td>
                       <td>Rs. {product.selling_price}</td>

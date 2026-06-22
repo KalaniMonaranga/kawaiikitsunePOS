@@ -3,13 +3,14 @@ import { NavLink } from "react-router-dom";
 
 function Sidebar() {
   const menuItems = [
-  { name: "Dashboard", path: "/" },
-  { name: "Sales", path: "/sales" },
-  { name: "Products", path: "/products" },
-  { name: "Categories", path: "/categories" },
-  { name: "Customers", path: "/customers" },
-  { name: "Reports", path: "/reports" }
-];
+    { name: "Dashboard", path: "/" },
+    { name: "Sales", path: "/sales" },
+    { name: "Products", path: "/products" },
+    { name: "Categories", path: "/categories" },
+    { name: "Customers", path: "/customers" },
+    { name: "Expenses", path: "/expenses" },
+    { name: "Reports", path: "/reports" },
+  ];
 
   return (
     <aside className="sidebar">
