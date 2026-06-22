@@ -222,7 +222,7 @@ setCart([]);
 function printReceipt() {
   if (!completedSale) return;
 
-  const win = window.open("", "_blank", "noopener,noreferrer");
+  const win = window.open("", "ReceiptWindow");
   if (!win) {
     alert("Unable to open print window. Please allow popups for this site.");
     return;
@@ -247,14 +247,6 @@ function printReceipt() {
         td { padding: 2px 0; vertical-align: top; }
         .right { text-align: right; }
       </style>
-      <script>
-        window.onload = () => {
-          setTimeout(() => {
-            window.focus();
-            window.print();
-          }, 200);
-        };
-      </script>
     </head>
 
     <body>
@@ -303,6 +295,7 @@ function printReceipt() {
   win.document.write(html);
   win.document.close();
   win.focus();
+  win.print();
 }
 
   const filteredProducts = products.filter((product) =>
