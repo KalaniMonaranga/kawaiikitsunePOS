@@ -199,19 +199,21 @@ function Sales() {
         .eq("id", customerId);
     }
 
-    setCompletedSale({
-  billNo,
-  customerName: finalCustomerName,
-  cart: [...cart],
-  total,
-  paid,
-  change,
-  date: new Date().toLocaleString(),
-});
+    const receiptData = {
+      billNo,
+      customerName: finalCustomerName,
+      cart: [...cart],
+      total,
+      paid,
+      change,
+      date: new Date().toLocaleString(),
+    };
 
-setShowReceiptOptions(true);
+    setCompletedSale(receiptData);
+    setShowReceiptOptions(true);
+    printReceipt(receiptData);
 
-setCart([]);
+    setCart([]);
     setPaidAmount("");
     setCustomerId("");
     setCustomerName("");
@@ -219,7 +221,7 @@ setCart([]);
     fetchCustomers();
   }
 
-function printReceipt() {
+function printReceipt(receipt = completedSale) {
   if (!completedSale) return;
 
   const win = window.open("", "ReceiptWindow");
@@ -257,14 +259,14 @@ function printReceipt() {
 
       <div class="line"></div>
 
-      <div>Bill: ${completedSale.billNo}</div>
-      <div>Customer: ${completedSale.customerName}</div>
-      <div>Date: ${completedSale.date}</div>
+      <div>Bill: ${receipt.billNo}</div>
+      <div>Customer: ${receipt.customerName}</div>
+      <div>Date: ${receipt.date}</div>
 
       <div class="line"></div>
 
       <table>
-        ${completedSale.cart
+        ${receipt.cart
           .map(
             (item) => `
               <tr>
@@ -281,9 +283,9 @@ function printReceipt() {
 
       <div class="line"></div>
 
-      <div>Total: Rs.${completedSale.total.toFixed(2)}</div>
-      <div>Paid: Rs.${completedSale.paid.toFixed(2)}</div>
-      <div>Change: Rs.${completedSale.change.toFixed(2)}</div>
+      <div>Total: Rs.${receipt.total.toFixed(2)}</div>
+      <div>Paid: Rs.${receipt.paid.toFixed(2)}</div>
+      <div>Change: Rs.${receipt.change.toFixed(2)}</div>
 
       <div class="line"></div>
 
