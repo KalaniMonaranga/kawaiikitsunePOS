@@ -218,119 +218,86 @@ setCart([]);
     fetchCustomers();
   }
 
-  function printReceipt() {
-  const receiptWindow = window.open("", "_blank");
+function printReceipt() {
+  if (!completedSale) return;
 
-  receiptWindow.document.write(`
-    <html>
-      <head>
-        <title>Receipt</title>
-        <style>
-          body {
-            width: 190px;
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            margin: 0;
-            padding: 5px;
-            color: #000;
-          }
+  const win = window.open("", "_blank");
 
-          .center { text-align: center; }
+  const html = `
+  <html>
+    <head>
+      <title>Receipt</title>
+      <style>
+        body {
+          width: 220px;
+          font-family: Arial;
+          font-size: 12px;
+          padding: 10px;
+        }
+        .center { text-align: center; }
+        .line { border-top: 1px dashed #000; margin: 6px 0; }
+        table { width: 100%; font-size: 11px; }
+        td { padding: 2px 0; }
+        .right { text-align: right; }
+      </style>
+    </head>
 
-          .logo {
-            width: 90px;
-            height: 90px;
-          }
+    <body>
+      <div class="center">
+        <h3>KAWAII KITSUNE</h3>
+        <p>Anime Store</p>
+      </div>
 
-          .line {
-            border-top: 1px dashed #000;
-            margin: 6px 0;
-          }
+      <div class="line"></div>
 
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-          }
+      <div>Bill: ${completedSale.billNo}</div>
+      <div>Customer: ${completedSale.customerName}</div>
+      <div>Date: ${completedSale.date}</div>
 
-          td {
-            padding: 2px 0;
-            vertical-align: top;
-          }
+      <div class="line"></div>
 
-          .right { text-align: right; }
-          .bold { font-weight: bold; }
-        </style>
-      </head>
-
-      <body>
-        <div class="center">
-          <div class="bold">KAWAII KITSUNE</div>
-          <div>Anime • Manga • Collectibles</div>
-        </div>
-
-        <div class="line"></div>
-
-        <div>Bill No: ${completedSale.billNo}</div>
-        <div>Customer: ${completedSale.customerName}</div>
-        <div>Date: ${completedSale.date}</div>
-
-        <div class="line"></div>
-
-        <table>
-          ${completedSale.cart
-            .map(
-              (item) => `
-              <tr><td colspan="2">${item.name}</td></tr>
+      <table>
+        ${completedSale.cart
+          .map(
+            (item) => `
               <tr>
-                <td>${item.cartQty} x Rs.${item.selling_price}</td>
-                <td class="right">Rs.${item.cartQty * item.selling_price}</td>
+                <td colspan="2">${item.name}</td>
+              </tr>
+              <tr>
+                <td>${item.cartQty} x ${item.selling_price}</td>
+                <td class="right">${item.cartQty * item.selling_price}</td>
               </tr>
             `
-            )
-            .join("")}
-        </table>
+          )
+          .join("")}
+      </table>
 
-        <div class="line"></div>
+      <div class="line"></div>
 
-        <table>
-          <tr>
-            <td class="bold">Total</td>
-            <td class="right">Rs.${completedSale.total.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td>Paid</td>
-            <td class="right">Rs.${completedSale.paid.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td>Change</td>
-            <td class="right">Rs.${completedSale.change.toFixed(2)}</td>
-          </tr>
-        </table>
+      <div>Total: Rs.${completedSale.total.toFixed(2)}</div>
+      <div>Paid: Rs.${completedSale.paid.toFixed(2)}</div>
+      <div>Change: Rs.${completedSale.change.toFixed(2)}</div>
 
-        <div class="line"></div>
+      <div class="line"></div>
 
-        <div class="center">
-          Thank you!<br/>
-          Come again 💜
-        </div>
+      <div class="center">Thank you 💜</div>
 
-        <script>
-          window.onload = function () {
+      <script>
+        window.onload = () => {
+          setTimeout(() => {
             window.print();
-          };
-        </script>
-      </body>
-    </html>
-  `);
+          }, 300);
+        };
+      </script>
 
-  receiptWindow.document.close();
+    </body>
+  </html>
+  `;
 
-setTimeout(() => {
-  receiptWindow.print();
-}, 500);
-
-  }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+}
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
