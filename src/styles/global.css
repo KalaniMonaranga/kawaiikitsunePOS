@@ -1162,27 +1162,100 @@ body {
   }
 }
 
+/* ===== RECEIPT PRINT (XP-58II) ===== */
 @media print {
-  .sidebar,
-  .header,
-  .footer,
-  .report-filter,
-  .report-print-btn {
-    display: none !important;
+  body * {
+    visibility: hidden;
   }
 
-  .main-area {
-    margin-left: 0 !important;
-    width: 100% !important;
+  #receipt, #receipt * {
+    visibility: visible;
   }
 
-  .page-content {
-    padding: 0 !important;
+  #receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm;
+    font-size: 11px;
+    font-family: monospace;
   }
 
-  .report-panel,
-  .report-card {
-    box-shadow: none !important;
-    border: 1px solid #ddd;
+  .receipt-center {
+    text-align: center;
   }
+
+  .receipt-divider {
+    border-top: 1px dashed black;
+    margin: 5px 0;
+  }
+
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .receipt-small {
+    font-size: 10px;
+  }
+}
+/* ===== FIX SALES UI ===== */
+
+/* Make product cards visible */
+.product-card {
+  background: #ffffff !important;
+  border: 1px solid #ddd !important;
+  color: #333 !important;
+  opacity: 1 !important;
+}
+
+/* Fix faded grid */
+.products-grid {
+  opacity: 1 !important;
+}
+
+/* Cart panel better look */
+.cart-panel {
+  background: #ffffff !important;
+  border: 1px solid #ddd;
+}
+
+/* Fix button ugly look */
+.checkout-btn {
+  width: 100%;
+  padding: 12px;
+  background: #6c5ce7;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.checkout-btn:hover {
+  background: #5a4bd8;
+}
+
+/* Fix inputs inside cart */
+.cart-panel input,
+.cart-panel select {
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+/* Discount section */
+.discount-box {
+  margin-top: 10px;
+}
+
+.discount-box input {
+  margin-top: 5px;
+}
+
+/* Fix total text */
+.cart-panel h3 {
+  margin-top: 10px;
+}
+
+/* Fix weird small button */
+button {
+  font-size: 14px;
 }
