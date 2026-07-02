@@ -45,30 +45,43 @@ function Reports() {
     setCustomers(customersData || []);
   }
 
-  function isInFilter(dateText) {
-    if (filter === "all") return true;
+  function parseSaleDate(createdAt) {
+    const date = new Date(createdAt);
+    if (!Number.isNaN(date.getTime())) return date;
 
-    const date = new Date(dateText);
-    const now = new Date();
-
-    if (filter === "today") {
-      return date.toDateString() === now.toDateString();
+    if (typeof createdAt === "string") {
+      const fixed = createdAt.trim().replace(" ", "T") + "Z";
+      const parsed = new Date(fixed);
+      if (!Number.isNaN(parsed.getTime())) return parsed;
     }
 
-    if (filter === "month") {
-      return (
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear()
-      );
-    }
-
-    return true;
+    return new Date();
   }
 
-  const filteredSales = useMemo(
-    () => sales.filter((sale) => isInFilter(sale.created_at)),
-    [sales, filter]
-  );
+  const filteredSales = useMemo(() => {
+    const now = new Date();
+
+    return sales.filter((sale) => {
+      const date = parseSaleDate(sale.created_at);
+
+      if (filter === "all") return true;
+      if (filter === "today") return date.toDateString() === now.toDateString();
+      if (filter === "week") {
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - 6);
+        startOfWeek.setHours(0, 0, 0, 0);
+        return date >= startOfWeek && date <= now;
+      }
+      if (filter === "month") {
+        return (
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
+      }
+
+      return true;
+    });
+  }, [sales, filter]);
 
   const totalSales = filteredSales.reduce(
     (sum, sale) => sum + Number(sale.total_amount || 0),
@@ -77,8 +90,25 @@ function Reports() {
 
   const totalBills = filteredSales.length;
 
-  const averageBill =
-    totalBills > 0 ? totalSales / totalBills : 0;
+  const totalProfit = useMemo(() => {
+    const productMap = products.reduce((map, product) => {
+      map[product.id] = product;
+      return map;
+    }, {});
+
+    const filteredSaleIds = new Set(filteredSales.map((sale) => sale.id));
+
+    return saleItems.reduce((sum, item) => {
+      if (!filteredSaleIds.has(item.sale_id)) return sum;
+
+      const product = productMap[item.product_id];
+      const costPrice = Number(product?.cost_price || 0);
+      const unitPrice = Number(item.unit_price ?? item.selling_price ?? 0);
+      const quantity = Number(item.quantity || 0);
+
+      return sum + (unitPrice - costPrice) * quantity;
+    }, 0);
+  }, [saleItems, products, filteredSales]);
 
   const lowStockProducts = products.filter(
     (product) => Number(product.quantity || 0) <= 5
@@ -113,6 +143,57 @@ function Reports() {
         Number(a.loyalty_points || 0)
     )
     .slice(0, 5);
+
+  function formatCsvValue(value) {
+    const stringValue = value == null ? "" : String(value);
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+
+  function exportReportAsExcel() {
+    const exportSales = filteredSales.length > 0 ? filteredSales : sales;
+
+    if (exportSales.length === 0) {
+      alert("No sales available to export.");
+      return;
+    }
+
+    const saleItemsBySale = saleItems.reduce((map, item) => {
+      const saleId = item.sale_id;
+      if (!map[saleId]) map[saleId] = [];
+      map[saleId].push(item.product_name || "Unknown Item");
+      return map;
+    }, {});
+
+    const headers = ["Bill No", "Customer", "Item Names", "Total", "Date", "Status"];
+    const rows = filteredSales.map((sale) => {
+      const itemList = saleItemsBySale[sale.id] || [];
+      return [
+        sale.bill_no,
+        sale.customer_name || "Customer",
+        itemList.join(" | "),
+        `Rs. ${Number(sale.total_amount || 0).toFixed(2)}`,
+        new Date(sale.created_at).toLocaleString(),
+        sale.payment_method || "-",
+      ];
+    });
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map(formatCsvValue).join(","))
+      .join("\r\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const fileName = `report-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", fileName);
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 
   function printReport() {
     window.print();
@@ -237,9 +318,14 @@ function Reports() {
           <p>View sales, customers, stock and product performance.</p>
         </div>
 
-        <button className="report-print-btn" onClick={printReport}>
-          Print Report
-        </button>
+        <div className="report-actions">
+          <button className="report-print-btn" onClick={printReport}>
+            Print Report
+          </button>
+          <button className="report-export-btn" onClick={exportReportAsExcel}>
+            Export Excel
+          </button>
+        </div>
       </div>
 
       <div className="report-filter">
@@ -254,14 +340,21 @@ function Reports() {
           className={filter === "today" ? "active" : ""}
           onClick={() => setFilter("today")}
         >
-          Today
+          Daily
+        </button>
+
+        <button
+          className={filter === "week" ? "active" : ""}
+          onClick={() => setFilter("week")}
+        >
+          Weekly
         </button>
 
         <button
           className={filter === "month" ? "active" : ""}
           onClick={() => setFilter("month")}
         >
-          This Month
+          Monthly
         </button>
       </div>
 
@@ -277,8 +370,8 @@ function Reports() {
         </div>
 
         <div className="report-card">
-          <h3>Average Bill</h3>
-          <h2>Rs. {averageBill.toFixed(2)}</h2>
+          <h3>Profit</h3>
+          <h2>Rs. {totalProfit.toFixed(2)}</h2>
         </div>
 
         <div className="report-card">

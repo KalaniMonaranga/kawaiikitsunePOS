@@ -9,10 +9,6 @@ function Dashboard() {
   const [recentSales, setRecentSales] = useState([]);
   const [loyalCustomers, setLoyalCustomers] = useState([]);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
   async function loadDashboardData() {
     const today = new Date().toISOString().split("T")[0];
 
@@ -57,6 +53,12 @@ function Dashboard() {
     setRecentSales(latestSales);
     setLoyalCustomers(customers || []);
   }
+
+  useEffect(() => {
+    (async () => {
+      await loadDashboardData();
+    })();
+  }, []);
 
   const cards = [
     {

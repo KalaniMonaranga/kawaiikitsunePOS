@@ -7,11 +7,6 @@ function Header() {
   const navigate = useNavigate();
 
   async function handleLogout() {
-  await supabase.auth.signOut();
-  window.location.reload();
-}
-
-  async function handleLogout() {
     await supabase.auth.signOut();
     window.location.reload();
   }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { supabase } from "./services/supabase";
 import Reports from "./pages/Reports";
+import Quotation from "./pages/Quotation";
 
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
@@ -16,8 +17,16 @@ function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  async function getSession() {
+    const { data } = await supabase.auth.getSession();
+    setSession(data.session);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    getSession();
+    (async () => {
+      await getSession();
+    })();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -29,12 +38,6 @@ function App() {
       listener.subscription.unsubscribe();
     };
   }, []);
-
-  async function getSession() {
-    const { data } = await supabase.auth.getSession();
-    setSession(data.session);
-    setLoading(false);
-  }
 
   if (loading) {
     return <div className="loading-screen">Loading Kawaii Kitsune POS...</div>;
@@ -53,6 +56,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/quotation" element={<Quotation />} />
           <Route path="/reports" element={<Reports />} />
         </Routes>
       </Layout>
