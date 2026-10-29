@@ -527,6 +527,90 @@ body {
   font-weight: 600;
 }
 
+/* ===== KAWAII KITSUNE PRODUCT BARCODE BUTTONS ===== */
+.product-preview-card .barcode-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.product-preview-card .barcode-action-btn {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: var(--white);
+  padding: 11px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.product-preview-card .barcode-action-btn:hover {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.product-preview-card .barcode-action-btn:focus-visible {
+  outline: 3px solid var(--pink);
+  outline-offset: 3px;
+}
+
+/* ===== PRODUCT CATEGORY FILTER ===== */
+.product-category-filter {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 12px;
+}
+
+.product-category-select {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 40px 11px 14px;
+  border: 1px solid #e5ddec;
+  border-radius: 14px;
+  background-color: var(--white);
+  color: var(--secondary);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-category-select:hover {
+  border-color: var(--primary);
+}
+
+.product-category-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(74, 20, 140, 0.1);
+}
+
+.product-category-select option {
+  background: var(--white);
+  color: var(--text);
+  padding: 8px;
+}
+
+@media (max-width: 600px) {
+  .product-category-filter {
+    max-width: 100%;
+  }
+
+  .product-preview-card .barcode-actions {
+    gap: 8px;
+  }
+}
+
 .product-img {
   width: 50px;
   height: 50px;
@@ -975,14 +1059,6 @@ body {
   cursor: pointer;
 }
 
-.loading-screen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4a148c;
-  font-weight: 800;
-}
 .logout-btn {
   background: #c62828 !important;
   color: white;
@@ -1413,3 +1489,1209 @@ button {
   background: black;
   color: white;
 }
+
+
+/* Reports: date and month selection UI */
+.report-filter label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.report-filter input[type="date"],
+.report-filter input[type="month"] {
+  width: 320px;
+  max-width: 100%;
+  height: 59px;
+  padding: 12px 14px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.report-filter input[type="date"]:focus,
+.report-filter input[type="month"]:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .report-filter input[type="date"],
+  .report-filter input[type="month"] {
+    width: 100%;
+  }
+}
+
+/* ===== ANIME DASHBOARD BANNER ===== */
+.kk-dashboard-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(28, 7, 54, 0.96) 0%,
+      rgba(38, 10, 71, 0.82) 48%,
+      rgba(22, 4, 43, 0.32) 100%
+    ),
+    var(--kk-dashboard-background);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(207, 159, 255, 0.35);
+}
+
+.kk-dashboard-banner-content {
+  position: relative;
+  z-index: 1;
+  max-width: 570px;
+  padding: 12px 4px;
+}
+
+.kk-dashboard-eyebrow {
+  color: #edbaff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.kk-dashboard-banner-content h2 {
+  margin: 12px 0;
+  color: #fff;
+  font-size: clamp(25px, 3vw, 38px);
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.45);
+}
+
+.kk-dashboard-banner-content p {
+  max-width: 420px;
+  color: #f4e8ff;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .kk-dashboard-banner {
+    min-height: 180px;
+    background-position: center;
+  }
+
+  .kk-dashboard-banner-content {
+    padding: 4px 0;
+  }
+
+  .kk-dashboard-banner-content h2 {
+    font-size: 25px;
+  }
+
+  .kk-dashboard-banner-content p {
+    font-size: 13px;
+  }
+}
+
+
+/* ===== KAWAII KITSUNE POS - MOBILE RESPONSIVE FIX ===== */
+
+/* Prevent the page from becoming wider than the device */
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+.app-layout {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Tablets */
+@media (min-width: 601px) and (max-width: 900px) {
+  .sidebar {
+    width: 200px;
+    padding: 18px 12px;
+  }
+
+  .main-area {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+    min-width: 0;
+  }
+
+  .page-content {
+    padding: 20px;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-row,
+  .product-layout,
+  .sales-layout,
+  .sales-container,
+  .customer-layout,
+  .reports-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Phones: iPhone and Android */
+@media (max-width: 600px) {
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Replace the tall desktop sidebar with a compact top navigation */
+  .sidebar {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 12px;
+    z-index: 20;
+  }
+
+  .logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+
+  .logo-box img {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 3px;
+    flex-shrink: 0;
+  }
+
+  .logo-box h2 {
+    font-size: 17px;
+  }
+
+  .logo-box p {
+    font-size: 11px;
+  }
+
+  /* Keep all existing navigation links available */
+  .menu {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .menu-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 10px 13px;
+    font-size: 13px;
+  }
+
+  /* Main content uses the full phone width */
+  .main-area {
+    margin-left: 0;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .header {
+    position: relative;
+    padding: 16px;
+    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    overflow-wrap: anywhere;
+  }
+
+  .header p {
+    font-size: 13px;
+  }
+
+  .header-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-actions input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .header-actions button {
+    flex: 1;
+  }
+
+  .page-content {
+    padding: 14px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Dashboard */
+  .welcome-card {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .welcome-card h2 {
+    font-size: 25px;
+    overflow-wrap: anywhere;
+  }
+
+  .cards-grid,
+  .dashboard-row,
+  .report-cards,
+  .reports-grid,
+  .product-layout,
+  .sales-layout,
+  .sales-container,
+  .customer-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .dash-card,
+  .panel,
+  .crud-card,
+  .product-form-card,
+  .product-preview-card,
+  .sales-products,
+  .cart-panel,
+  .customer-form-card,
+  .customer-info-card,
+  .report-card,
+  .report-panel {
+    padding: 17px;
+    min-width: 0;
+  }
+
+  /* Forms */
+  .anime-product-form,
+  .customer-form-grid,
+  .sales-search-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .full-input,
+  .anime-product-form textarea,
+  .customer-form-grid textarea {
+    grid-column: span 1;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+  .form-actions button {
+    flex: 1;
+  }
+
+  /* Sales product cards */
+  .product-sale-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sale-product-card {
+    min-width: 0;
+    padding: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  /* Tables scroll inside their own area */
+  .crud-card,
+  .table-wrap {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-wrap table {
+    min-width: 650px;
+  }
+
+  /* Reports filters */
+  .report-filter {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .report-filter input[type="date"],
+  .report-filter input[type="month"] {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Product preview */
+  .preview-box {
+    padding: 16px;
+  }
+
+  .preview-box img,
+  .preview-placeholder {
+    width: 110px;
+    height: 110px;
+  }
+
+  /* Avoid oversized headings or long product names */
+  .crud-page h2,
+  .sales-page h2,
+  .reports-page h2 {
+    font-size: 24px;
+    overflow-wrap: anywhere;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .footer {
+    padding: 14px;
+  }
+}
+
+/* ===== KAWAII KITSUNE: CYBERPUNK ANIME ATMOSPHERE ===== */
+
+/* Subtle neon atmosphere inside the sidebar */
+.sidebar {
+  position: fixed;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 100% 15%,
+      rgba(190, 120, 255, 0.20),
+      transparent 32%
+    ),
+    linear-gradient(180deg, #2e0854, #4a148c);
+}
+
+.sidebar::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -120px;
+  bottom: 8%;
+  border-radius: 50%;
+  background: rgba(211, 155, 255, 0.18);
+  filter: blur(65px);
+  pointer-events: none;
+  animation: kk-sidebar-glow 7s ease-in-out infinite alternate;
+}
+
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Categories: scroll long lists inside the table area */
+.categories-table-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #8050b5 rgba(255, 255, 255, 0.15);
+  border-radius: inherit;
+}
+
+/* Keep table headings visible while scrolling */
+.categories-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Chrome, Edge and Safari scrollbar */
+.categories-table-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.categories-table-scroll::-webkit-scrollbar-thumb {
+  background: #8050b5;
+  border-radius: 8px;
+}
+
+.categories-table-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== REPORTS PAGE: CYBERPUNK READABILITY ===== */
+
+.page-content h1 {
+  color: #f8f2ff;
+  text-shadow:
+    0 2px 8px rgba(20, 4, 35, 0.9),
+    0 0 18px rgba(190, 100, 255, 0.35);
+}
+
+.page-content > p {
+  color: #f3e9ff;
+  text-shadow: 0 2px 6px rgba(20, 4, 35, 0.95);
+}
+
+/* ===== KAWAII KITSUNE MOBILE RESPONSIVE FIX ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+.app-layout,
+.main-area,
+.page-content {
+  min-width: 0;
+}
+
+/* ===== IPHONE LAYOUT FIX ===== */
+@media (max-width: 768px) {
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sidebar {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: hidden;
+  }
+
+  .logo-box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    gap: 8px;
+  }
+
+  .menu-item {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .main-area {
+    margin: 0 !important;
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+    background-attachment: scroll;
+  }
+
+  .page-content {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 12px;
+    overflow: visible;
+  }
+
+  /* Dashboard cards: two columns */
+  .stats-grid,
+  .dashboard-stats,
+  .dashboard-cards,
+  .stats-cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .dash-card {
+    min-width: 0;
+    width: 100%;
+    padding: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .dash-card h2,
+  .dash-card h3,
+  .dash-card strong {
+    overflow-wrap: anywhere;
+  }
+
+  /* Sales and customer panels stack vertically */
+  .recent-sales,
+  .loyal-customers,
+  .dashboard-bottom,
+  .dashboard-panels {
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .kk-dashboard-banner {
+    width: 100%;
+    min-width: 0;
+    min-height: 180px;
+    padding: 18px;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .page-content table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .page-content input,
+  .page-content select,
+  .page-content textarea {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .page-content {
+    padding: 8px;
+  }
+
+  .stats-grid,
+  .dashboard-stats,
+  .dashboard-cards,
+  .stats-cards {
+    gap: 8px;
+  }
+
+  .dash-card {
+    padding: 10px;
+  }
+
+  .dash-card h2 {
+    font-size: 1.15rem;
+  }
+}
+
+/* ===== KAWAII KITSUNE POS BANNER IMAGE ONLY ===== */
+.kk-dashboard-banner {
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(28, 7, 54, 0.92) 0%,
+      rgba(38, 10, 71, 0.65) 55%,
+      rgba(22, 4, 43, 0.18) 100%
+    ),
+    url("/src/assets/anime-dashboard-bg.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ===== TRANSLUCENT ANIME GLASS CARDS ===== */
+.dash-card,
+.report-card,
+.panel,
+.crud-card,
+.product-form-card,
+.product-preview-card,
+.sales-products,
+.cart-panel,
+.customer-form-card,
+.customer-info-card,
+.report-panel,
+.report-chart-panel {
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+/* ===== KAWAII KITSUNE: NEON GLASS THEME ===== */
+
+/* ===== ANIME WALLPAPER ACROSS ALL POS PAGES ===== */
+.main-area {
+  margin-left: 270px;
+  width: calc(100% - 270px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  background-color: #211033;
+  background-image:
+    linear-gradient(
+      rgba(30, 8, 55, 0.32),
+      rgba(30, 8, 55, 0.32)
+    ),
+    url("/src/assets/anime-dashboard-bgall.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Dashboard banner: cinematic purple glow */
+.kk-dashboard-banner {
+  border: 1px solid rgba(221, 158, 255, 0.55);
+  box-shadow:
+    0 12px 32px rgba(46, 8, 84, 0.22),
+    0 0 20px rgba(180, 95, 255, 0.12);
+}
+
+/* Glass effect for dashboard and report cards */
+.dash-card,
+.report-card {
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-bottom: 4px solid var(--primary);
+  box-shadow:
+    0 10px 28px rgba(46, 8, 84, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.dash-card:hover,
+.report-card:hover {
+  box-shadow:
+    0 14px 32px rgba(46, 8, 84, 0.18),
+    0 0 16px rgba(190, 120, 255, 0.18);
+}
+
+/* Glass panels throughout the POS */
+.panel,
+.crud-card,
+.product-form-card,
+.product-preview-card,
+.sales-products,
+.cart-panel,
+.customer-form-card,
+.customer-info-card,
+.report-panel,
+.report-chart-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 30px rgba(46, 8, 84, 0.10);
+}
+
+/* Recent sales, loyal customers and report list items */
+.recent-sale-item,
+.loyal-item,
+.report-list-item {
+  background: rgba(248, 243, 250, 0.78);
+  border: 1px solid rgba(216, 196, 232, 0.65);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.recent-sale-item:hover,
+.loyal-item:hover,
+.report-list-item:hover {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(170, 110, 225, 0.5);
+}
+
+/* Sales product cards */
+.sale-product-card {
+  background: rgba(248, 243, 250, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(190, 120, 255, 0.20);
+}
+
+/* Soft neon focus on inputs */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #a76ce0;
+  box-shadow: 0 0 0 3px rgba(167, 108, 224, 0.12);
+}
+
+/* Smooth page entrance */
+.page-content > * {
+  animation: kk-glass-enter 0.4s ease-out both;
+}
+
+@keyframes kk-glass-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .page-content > *,
+  .dash-card,
+  .report-card,
+  .recent-sale-item,
+  .loyal-item,
+  .report-list-item {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ===== KAWAII KITSUNE: SUBTLE CYBERPUNK ANIMATIONS ===== */
+
+/* Smooth entrance for content across all pages */
+.page-content > * {
+  animation: kk-page-enter 0.45s ease-out both;
+}
+
+@keyframes kk-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gentle glow and lift for common cards and panels */
+.dash-card,
+.report-card,
+.panel,
+.crud-card,
+.product-form-card,
+.product-preview-card,
+.sales-products,
+.customer-form-card,
+.customer-info-card,
+.report-panel {
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.dash-card:hover,
+.report-card:hover,
+.panel:hover,
+.crud-card:hover,
+.product-form-card:hover,
+.product-preview-card:hover,
+.sales-products:hover,
+.customer-form-card:hover,
+.customer-info-card:hover,
+.report-panel:hover {
+  box-shadow:
+    0 14px 32px rgba(46, 8, 84, 0.15),
+    0 0 0 1px rgba(190, 120, 255, 0.12);
+}
+
+/* Subtle neon interaction for buttons */
+button {
+  transition:
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+button:hover {
+  filter: brightness(1.04);
+}
+
+button:focus-visible,
+.menu-item:focus-visible {
+  outline: 2px solid #d8a5ff;
+  outline-offset: 3px;
+}
+
+/* Product and sales cards */
+.sale-product-card {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.sale-product-card:hover {
+  border-color: rgba(190, 120, 255, 0.65);
+  box-shadow: 0 10px 24px rgba(46, 8, 84, 0.14);
+}
+
+/* Soft focus glow for form fields */
+input:not([type="checkbox"]):focus,
+select:focus,
+textarea:focus {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Respect accessibility settings */
+@media (prefers-reduced-motion: reduce) {
+  .page-content > * {
+    animation: none !important;
+  }
+
+  .dash-card,
+  .report-card,
+  .panel,
+  .crud-card,
+  .product-form-card,
+  .product-preview-card,
+  .sales-products,
+  .customer-form-card,
+  .customer-info-card,
+  .report-panel,
+  .sale-product-card,
+  button {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    position: relative;
+  }
+}
+
+/* Gentle glow around the existing logo */
+.logo-box img {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3),
+              0 0 22px rgba(218, 170, 255, 0.15);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.logo-box img:hover {
+  box-shadow: 0 0 26px rgba(218, 170, 255, 0.55);
+  transform: translateY(-2px);
+}
+
+/* Neon hover effect on existing navigation links */
+.menu-item {
+  position: relative;
+  overflow: hidden;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  box-shadow: 0 0 16px rgba(203, 153, 255, 0.12);
+}
+
+/* Animated glow on the existing dashboard banner */
+.kk-dashboard-banner {
+  border-color: rgba(207, 159, 255, 0.5);
+  box-shadow:
+    0 12px 30px rgba(46, 8, 84, 0.18),
+    inset 0 0 30px rgba(180, 110, 255, 0.06);
+  animation: kk-banner-arrive 0.9s ease-out both;
+}
+
+/* Atmospheric floating light — does not block clicks */
+.kk-dashboard-banner::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 18% 28%,
+      rgba(220, 170, 255, 0.22) 0 2px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 38% 72%,
+      rgba(255, 255, 255, 0.18) 0 1.5px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 63% 38%,
+      rgba(192, 135, 255, 0.25) 0 2px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 82% 64%,
+      rgba(255, 210, 255, 0.18) 0 1.5px,
+      transparent 3px
+    );
+  background-size: 190px 150px, 230px 190px, 210px 170px, 250px 200px;
+  animation: kk-particles-drift 22s linear infinite;
+}
+
+/* Make sure banner text remains above the effect */
+.kk-dashboard-banner-content {
+  z-index: 1;
+}
+
+/* Smooth purple glow on dashboard cards */
+.dash-card,
+.report-card {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.dash-card:hover,
+.report-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 16px 36px rgba(46, 8, 84, 0.16),
+    0 0 0 1px rgba(150, 90, 220, 0.08);
+}
+
+/* Gentle anime-inspired glow on content panels */
+.panel,
+.product-form-card,
+.product-preview-card,
+.sales-products,
+.customer-form-card,
+.customer-info-card,
+.report-panel {
+  transition: box-shadow 0.25s ease;
+}
+
+.panel:hover,
+.product-form-card:hover,
+.product-preview-card:hover,
+.report-panel:hover {
+  box-shadow: 0 14px 34px rgba(46, 8, 84, 0.14);
+}
+
+@keyframes kk-sidebar-glow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes kk-particles-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(35px, -25px, 0);
+  }
+}
+
+@keyframes kk-banner-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar::after,
+  .kk-dashboard-banner,
+  .kk-dashboard-banner::before {
+    animation: none !important;
+  }
+
+  .menu-item,
+  .logo-box img,
+  .dash-card,
+  .report-card {
+    transition: none !important;
+  }
+}
+
+/* Keep the atmosphere subtle on phones */
+@media (max-width: 600px) {
+  .sidebar::after {
+    width: 130px;
+    height: 130px;
+    right: -85px;
+    bottom: 5%;
+  }
+
+  .kk-dashboard-banner::before {
+    animation-duration: 32s;
+  }
+}
+
+/* Kitsune-themed sidebar signature */
+.kitsune-accent {
+  margin-top: 12px;
+  color: #e8c7ff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  opacity: 0.85;
+}
+
+.kitsune-accent span {
+  color: #f0b8ec;
+  text-shadow: 0 0 8px rgba(240, 184, 236, 0.65);
+}
+
+@media (max-width: 600px) {
+  .kitsune-accent {
+    margin-top: 4px;
+    justify-content: flex-start;
+    font-size: 8px;
+  }
+}
+
+/* ===== KITSUNE MODE ACCENT ===== */
+.kitsune-accent {
+  margin-top: 10px;
+  color: #e5c5ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 0 8px rgba(218, 170, 255, 0.65);
+  animation: kitsune-pulse 3s ease-in-out infinite;
+}
+
+@keyframes kitsune-pulse {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(218, 170, 255, 0.35);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(218, 170, 255, 0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kitsune-accent {
+    animation: none;
+  }
+}
+
+/* Fix Nezuko sizing without changing the logo */
+.sidebar-logo-box > img:not(.sidebar-nezuko) {
+  width: 95px;
+  height: 95px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 8px;
+  margin: 0 auto 10px;
+}
+
+/* Nezuko blended into the sidebar background */
+.sidebar {
+  position: fixed;
+  isolation: isolate;
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 58%;
+  background-image:
+    linear-gradient(
+      to bottom,
+      #351064 0%,
+      rgba(53, 16, 100, 0.45) 25%,
+      rgba(53, 16, 100, 0.08) 100%
+    ),
+    var(--nezuko-background);
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover, contain;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+/* ===== CYBERPUNK GLASS HEADER ===== */
+.app-header,
+.header {
+  background: rgba(245, 237, 252, 0.58) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom: 1px solid rgba(220, 180, 255, 0.22);
+  box-shadow: 0 8px 24px rgba(45, 12, 75, 0.08);
+}
+
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+

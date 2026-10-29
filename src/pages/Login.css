@@ -1,0 +1,361 @@
+.kk-login-page {
+  --login-cyan: #9af4f0;
+  --login-pink: #f5a0e8;
+  --login-white: #fff9ff;
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  padding: 48px clamp(22px, 7vw, 100px) 76px;
+  isolation: isolate;
+  color: var(--login-white);
+  background-image:
+    linear-gradient(90deg, rgba(10, 5, 24, 0.32), rgba(11, 6, 25, 0.46) 46%, rgba(10, 5, 24, 0.72)),
+    var(--kk-login-background);
+  background-position: center;
+  background-size: cover;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.kk-login-page::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(9, 5, 20, 0.62), transparent 35%, rgba(9, 5, 20, 0.12));
+  content: "";
+  pointer-events: none;
+}
+
+.kk-login-grid {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(196, 146, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 146, 255, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: linear-gradient(transparent, black 25%, black 78%, transparent);
+  pointer-events: none;
+}
+
+.kk-login-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.kk-login-particles span {
+  position: absolute;
+  top: -24px;
+  left: calc(var(--particle) * 7.1%);
+  color: var(--login-pink);
+  opacity: 0;
+  text-shadow: 0 0 12px rgba(245, 160, 232, 0.9);
+  animation: login-spark-drift 9s linear infinite;
+  animation-delay: calc(var(--particle) * -0.65s);
+}
+
+.kk-login-layout {
+  display: grid;
+  width: min(1120px, 100%);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
+  align-items: center;
+  gap: clamp(44px, 9vw, 132px);
+}
+
+.kk-login-brand {
+  max-width: 560px;
+  animation: login-enter 700ms ease-out both;
+}
+
+.kk-brand-kicker,
+.kk-brand-caption {
+  color: var(--login-cyan);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.kk-login-brand h1 {
+  margin-top: 20px;
+  color: var(--login-white);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(42px, 6vw, 76px);
+  font-weight: 700;
+  line-height: 1.04;
+  text-shadow: 0 4px 30px rgba(17, 7, 30, 0.46);
+}
+
+.kk-login-brand h2 {
+  margin-top: 14px;
+  color: #f4c2ed;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.kk-login-brand > p {
+  margin-top: 24px;
+  color: rgba(255, 249, 255, 0.88);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-style: italic;
+}
+
+.kk-brand-line {
+  width: 76px;
+  height: 2px;
+  margin: 28px 0 18px;
+  background: linear-gradient(90deg, var(--login-cyan), var(--login-pink));
+  box-shadow: 0 0 14px rgba(154, 244, 240, 0.6);
+}
+
+.kk-brand-caption {
+  color: rgba(255, 249, 255, 0.68);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.kk-glass-card {
+  width: 100%;
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(18, 12, 34, 0.72);
+  box-shadow: 0 24px 80px rgba(5, 2, 15, 0.38), inset 0 1px rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  animation: login-enter 800ms 100ms ease-out both;
+}
+
+.kk-glass-logo {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  margin: 0 auto 22px;
+  border: 1px solid rgba(154, 244, 240, 0.55);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 0 25px rgba(154, 244, 240, 0.2);
+}
+
+.kk-glass-logo img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+}
+
+.kk-login-heading {
+  text-align: center;
+}
+
+.kk-login-heading > span {
+  color: var(--login-cyan);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.kk-login-heading h2 {
+  margin-top: 8px;
+  color: var(--login-white);
+  font-size: 26px;
+}
+
+.kk-login-heading p {
+  margin-top: 8px;
+  color: rgba(255, 249, 255, 0.68);
+  font-size: 13px;
+}
+
+.kk-login-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 28px;
+}
+
+.kk-login-form label {
+  margin: 0 0 8px;
+  color: rgba(255, 249, 255, 0.88);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.kk-login-form input {
+  width: 100%;
+  min-height: 48px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(226, 205, 244, 0.3);
+  border-radius: 4px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--login-white);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.kk-login-form input::placeholder {
+  color: rgba(255, 249, 255, 0.46);
+}
+
+.kk-login-form input:focus {
+  border-color: var(--login-cyan);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(154, 244, 240, 0.14);
+}
+
+.kk-login-form button {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 3px;
+  border: 1px solid var(--login-cyan);
+  border-radius: 4px;
+  background: linear-gradient(100deg, #6e38ae, #9b4ba9);
+  color: white;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.kk-login-form button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(154, 244, 240, 0.2);
+  filter: brightness(1.12);
+}
+
+.kk-login-form button:focus-visible {
+  outline: 3px solid var(--login-pink);
+  outline-offset: 3px;
+}
+
+.kk-login-form button:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+
+.kk-login-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: login-spin 700ms linear infinite;
+}
+
+.kk-login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  color: rgba(255, 249, 255, 0.62);
+  font-size: 11px;
+}
+
+.kk-footer-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--login-cyan);
+  box-shadow: 0 0 9px var(--login-cyan);
+}
+
+.kk-login-bottom {
+  position: absolute;
+  right: clamp(22px, 7vw, 100px);
+  bottom: 24px;
+  left: clamp(22px, 7vw, 100px);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: rgba(255, 249, 255, 0.6);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+@keyframes login-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes login-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes login-spark-drift {
+  0% { opacity: 0; transform: translateY(-5vh) rotate(0); }
+  12% { opacity: 0.75; }
+  88% { opacity: 0.5; }
+  100% { opacity: 0; transform: translate(22px, 110vh) rotate(260deg); }
+}
+
+@media (max-width: 760px) {
+  .kk-login-page {
+    padding: 34px 20px 76px;
+    background-position: 42% center;
+  }
+
+  .kk-login-layout {
+    width: min(100%, 430px);
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .kk-login-brand {
+    text-align: center;
+  }
+
+  .kk-login-brand h1 {
+    margin-top: 10px;
+    font-size: clamp(36px, 10vw, 54px);
+  }
+
+  .kk-login-brand h2 {
+    margin-top: 8px;
+    font-size: 11px;
+  }
+
+  .kk-login-brand > p {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+
+  .kk-brand-line,
+  .kk-brand-caption {
+    display: none;
+  }
+
+  .kk-glass-card {
+    padding: 28px 24px;
+  }
+}
+
+@media (max-width: 420px) {
+  .kk-login-bottom {
+    align-items: center;
+    flex-direction: column;
+    gap: 7px;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kk-login-page *,
+  .kk-login-page *::before,
+  .kk-login-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -131,7 +131,7 @@ function Categories() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="table-wrap">
+        <div className="table-wrap categories-table-scroll">
           <table>
             <thead>
               <tr>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
+import animeDashboardBackground from "../assets/anime-dashboard-bgall.png";
 
 function Dashboard() {
   const [todaySales, setTodaySales] = useState(0);
@@ -89,8 +90,14 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-      <div className="welcome-card">
-        <div>
+      <div
+        className="welcome-card kk-dashboard-banner"
+        style={{
+          "--kk-dashboard-background": `url("${animeDashboardBackground}")`,
+        }}
+      >
+        <div className="kk-dashboard-banner-content">
+          <span className="kk-dashboard-eyebrow">WELCOME TO YOUR ANIME WORLD</span>
           <h2>Kawaii Kitsune POS</h2>
           <p>
             Manage your anime shop sales, products, stock and reports smoothly.

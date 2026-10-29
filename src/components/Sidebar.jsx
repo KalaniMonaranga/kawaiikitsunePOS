@@ -1,5 +1,6 @@
 import logo from "../assets/logo.png";
 import { NavLink } from "react-router-dom";
+import nezuko from "../assets/nezuko-sidebar.png";
 
 
 function Sidebar() {
@@ -15,11 +16,16 @@ function Sidebar() {
 
 
   return (
-    <aside className="sidebar">
-      <div className="logo-box">
+    <aside
+      className="sidebar"
+      style={{ "--nezuko-background": `url(${nezuko})` }}
+    >
+      <div className="logo-box sidebar-logo-box">
         <img src={logo} alt="Kawaii Kitsune Logo" />
         <h2>Kawaii Kitsune</h2>
         <p>POS System</p>
+        <div className="kitsune-accent">✦ KITSUNE MODE ✦</div>
+
       </div>
 
       <nav className="menu">
